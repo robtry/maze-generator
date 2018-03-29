@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Maze</title>
+	<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+	<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/grids-responsive-min.css">
+	<link rel="stylesheet" href="css/main.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/addons/p5.dom.min.js"></script>
+	<script src="MazeDraw.js"></script>
+	<script src="MazeController.js"></script>
+	<script src="sketch.js"></script>
+
+</head>
+<body>
+
+
+<div id="layout" class="pure-g">
+
+	<div class="content pure-u-*">
+		<div class="pure-g">
+			<div class="pure-u-1 pure-u-md-1-2">
+				<br>
+
+				<button class="pure-button pure-button-primary" id="photo">
+					<i class="fa fa-camera"></i>
+				</button>
+
+				<button class="button-error pure-button" id= "reiniciar">
+					<i class="fa fa-undo"></i>					
+				</button>
+
+				<button class="button-successs pure-button" id="clearConsole">
+					<i class="fa fa-file"></i>
+				</button>
+
+			</div>
+		</div>
+		<br>
+		<center><div id='myContainer'></div></center>
+	</div>
+
+</div>
+
+<div id="consola">
+	<textarea readonly class="pure-input negro" placeholder="Las respuestas se visualizarán aquí" id="history"></textarea>
+</div>
+
+</body>
+</html>

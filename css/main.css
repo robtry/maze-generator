@@ -1,0 +1,175 @@
+* {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+a {
+	text-decoration: none;
+	color: rgb(61, 146, 201);
+}
+a:hover,
+a:focus {
+	text-decoration: underline;
+}
+
+#layout {
+	padding: 0;
+}
+
+.header {
+	text-align: center;
+	top: auto;
+	padding: 1px 15px 25px 0px;
+}
+
+.sidebar {
+	background: rgb(61, 79, 93);
+	color: #fff;
+	width: 100%;
+	z-index: 5;
+}
+
+.brand-tagline {
+	margin: 0;
+	font-weight: 300;
+	color: rgb(176, 202, 219);
+}
+
+input{
+	width: 30%; /* los normlaes */
+}
+
+.nav-item {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: inline-block;
+	*display: inline;
+	zoom: 1;
+}
+
+.nav-item button {
+	background: transparent;
+	border: 2px solid rgb(176, 202, 219);
+	color: #fff;
+	margin-top: 0.4em;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	font-size: 85%;
+}
+
+.nav-item button:hover,
+.nav-item button:focus {
+	border: 2px solid rgb(61, 146, 201);
+	text-decoration: none;
+}
+
+.nav-item .button-success button:hover,
+.nav-item .button-success button:focus {
+	border: 2px solid rgb(28, 184, 65);
+	text-decoration: none;
+}
+
+.nav-item .button-warning button:hover,
+.nav-item .button-warning button:focus {
+	border: 2px solid rgb(223, 117, 20);
+	text-decoration: none;
+}
+
+
+.content {
+	padding: 0em 0.1em 0;
+}
+
+/*#subhead {
+	text-transform: uppercase;
+	border-bottom: 1px solid #eee;
+	padding: 0.4em 0;
+	font-size: 80%;
+	letter-spacing: 0.1em;
+}*/
+
+.negro{
+	color : black;
+}
+
+textarea{
+	width: 80%;
+	margin: 0 auto;
+	resize: none;
+}
+
+.button-error{
+	background: rgb(202, 60, 60); 
+	color : white ;
+	border-radius: 4px;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.button-successs:hover{
+	background: rgb(28, 184, 65);
+	color : white;
+	transition: all 0.4s;
+}
+
+#loadMaze > input{
+	width: 65%; /* choosen file */
+}
+
+#consola {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	height: 100%;
+	background-color: red;
+	right: 0;
+	z-index: 0;
+	width: 150px; /* cambiar la generacion del maze too */
+}
+
+#history{
+	width: 100%;
+	height: 100%;
+}
+
+
+input[type=checkbox]{
+	width: 5%;
+}
+
+@media (min-width: 48em) {
+
+	.content {
+		padding: 0em 1.5em 0;
+	}
+
+	.header {
+		margin: 1% 2em 0;
+		text-align: right;
+	}
+
+	textarea{
+		width: 100%;
+		resize: none;
+	}
+
+	.sidebar {
+		position: fixed;
+		top: 0;
+		bottom: 0;
+		width: 45%;
+	}
+}
+
+@media (min-width: 1030px) {
+	.sidebar {
+		width: 30%;
+	}
+}
+
+@media (min-width: 1345px) {
+	.sidebar {
+		width: 25%;
+	}
+}
