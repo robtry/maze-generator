@@ -7,14 +7,30 @@
 ===================================================*/
 //botones
 var generarBtn, fotoBtn, importarBtn, pasosBtn, restartBtn;
+
 //pasos (cadena de los pasos dados)
 var steps = '';
+
 //para tamaños de font, padding de los botones, ancho y alto del area principal
 var responsiveSize = innerWidth*(1/25);
 var anchoMaze = innerWidth/(4/3);
 var altoMaze = innerHeight/(6/5);
 var xposMaze = innerWidth*(1/9);
 var yposMaze = innerHeight*(1/16)+(responsiveSize/3)+10;
+
+//matriz que contiene el maze
+var matriz;
+
+//posiciones del control
+var currentPos;
+var finalPos;
+var initialPos;
+
+//tamaño de los cuadritos del maze
+var anchoCuadritos;
+var altoCuadritos;
+var xposCuadrito;
+var yposCuadrito;
 
 function setup()
 {
@@ -100,7 +116,7 @@ function menu()
 	importarBtn.style('display','block');
 	importarBtn.style('font-size','16px');
 	importarBtn.mousePressed(function (){
-		loadStrings("currentMaze.txt", createMaze);
+		loadStrings("currentMaze.txt", copyMaze);
 	});
 
 	//boton crear laberinto con algoritmo
@@ -118,57 +134,6 @@ function menu()
 	});
 }
 
-function createMaze(matriz)//matriz es el arreglo que recibo
-{
-	//console.log(matriz);
-
-	//rectangulo principal
-	mainArea();
-
-	importarBtn.style('display','none');
-	generarBtn.style('display','none');
-
-	var filas = matriz[0].split(" ")[0];
-	var columnas = matriz[0].split(" ")[1];	
-
-	var anchoCuadritos = ((100/columnas)*anchoMaze)/100
-	var altoCuadritos = ((100/filas)*altoMaze)/100;
-	var xposCuadrito = xposMaze;
-	var yposCuadrito = yposMaze;
-	textSize(0);
-
-	for(var i = 1; i <= filas; i++)
-	{
-		xposCuadrito = xposMaze;
-		noStroke();
-		fill(0);
-		text(i-1,xposCuadrito-30, yposCuadrito+altoCuadritos/2);
-		for(var j = 0; j < columnas; j++)
-		{
-			if(matriz[i].split("")[j] == 0)
-				fill(255); //blanco
-			else 
-				fill(0); //negro
-
-			strokeWeight(4); // para los cuadritos mas pequeños
-			stroke(0); // para los cuadritos mas pequeños
-			rect(xposCuadrito,yposCuadrito,anchoCuadritos,altoCuadritos);
-
-			if(i == filas)//es el ultimo
-			{
-				noStroke();
-				fill(0);
-				text(j,xposCuadrito+anchoCuadritos/2, yposCuadrito + altoCuadritos + 25);
-			}
-
-			xposCuadrito += anchoCuadritos;
-		}
-		yposCuadrito += altoCuadritos;
-	}
-
-		
-}
-
 function mainArea()
 {
 	background(255); // para limpiar todo
@@ -179,6 +144,111 @@ function mainArea()
 
 	//resetear
 	noStroke(); 
+}
+
+function copyMaze(matrizLeida)//matrizLeida es el arreglo que leyo
+{
+	//console.log(matrizLeida);
+
+	var filas = matrizLeida[0].split(" ")[0];
+	var columnas = matrizLeida[0].split(" ")[1];	
+
+	matriz = new Array(filas);
+	for(var i = 0; i < filas; i++)
+	{
+		matriz[i] = new Array(columnas);
+	}
+
+	anchoCuadritos = ((100/columnas)*anchoMaze)/100
+	altoCuadritos = ((100/filas)*altoMaze)/100;
+
+
+	for(var i = 1; i <= filas; i++) // uno por que es la segunda linea donde empieza
+	{
+		for(var j = 0; j < columnas; j++)
+		{
+			matriz[i-1][j] = matrizLeida[i].split("")[j]
+		}
+	}
+
+	//depues de que se lleno la matriz selccionar el punto final
+	chooseFinalPosition();
+	chooseInitialPosition();
+	drawMaze();
+}
+
+function chooseFinalPosition()
+{
+	//cambiar la probabilidad
+	var valido = false;
+	while(!valido)
+	{
+		finalPos = createVector(Math.floor(random(matriz.length-1)), Math.floor(random(matriz[0].length-1)));
+		//console.log(finalPos.x);
+		//console.log(finalPos.y);
+		if(matriz[finalPos.x][finalPos.y] == 1 && (finalPos.x != 0 || finalPos.y != 0))
+			valido = false;
+		else
+			valido = true;
+		//console.log(matriz[finalPos.x][finalPos.y])
+	}
+}
+
+function chooseInitialPosition()
+{
+	initialPos = createVector(matriz.length-1,0);
+}
+
+function currentPosition()
+{
+
+}
+
+
+function drawMaze()
+{
+	//rectangulo principal
+	mainArea();
+
+	importarBtn.style('display','none');
+	generarBtn.style('display','none');
+
+	textSize(0);
+
+	xposCuadrito = xposMaze;
+	yposCuadrito = yposMaze;
+	for(var i = 0; i < matriz.length; i++)
+	{
+		xposCuadrito = xposMaze;
+		noStroke();
+		fill(0);
+		text(i,xposCuadrito-30, yposCuadrito+altoCuadritos/2);
+		for(var j = 0; j < matriz[0].length; j++)
+		{
+			if(i == initialPos.x && j == initialPos.y)
+				fill("#27ae60");
+			else if(i == finalPos.x && j == finalPos.y)
+				fill("#e67e22");
+			else if(matriz[i][j] == 0)
+				fill(255); //blanco
+			else 
+				fill(0); //negro
+
+			strokeWeight(4); // para los cuadritos mas pequeños
+			stroke(0); // para los cuadritos mas pequeños
+			rect(xposCuadrito,yposCuadrito,anchoCuadritos,altoCuadritos);
+
+			if(i == (matriz.length)-1)//es el ultimo
+			{
+				noStroke();
+				fill(0);
+				text(j,xposCuadrito+anchoCuadritos/2, yposCuadrito + altoCuadritos + 20);
+			}
+
+			xposCuadrito += anchoCuadritos;
+		}
+		yposCuadrito += altoCuadritos;
+	}
 }
 
 /*
