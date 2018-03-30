@@ -11,11 +11,15 @@ var generarBtn, fotoBtn, importarBtn, pasosBtn, restartBtn;
 var steps = '';
 //para tamaños de font y padding de los botones
 var responsiveSize = innerWidth*(1/25);
+var anchoMaze = innerWidth/(8/7);
+var altoMaze = innerHeight/(8/7);
+var xposMaze = innerWidth*(1/16);
+var yposMaze = innerHeight*(1/16)+responsiveSize/3+10;
 
 function setup()
 {
 	createCanvas(innerWidth, innerHeight/(100/99));
-	background(255);
+
 	menu();
 
 	/*======= ACOMODAR BOTONES =======*/
@@ -76,11 +80,12 @@ function setup()
 
 function menu()
 {
+	background(255);
+
 	//rectangulo
-	stroke(40);
-	strokeWeight(9);
-	rect(width*(1/16),height*(1/16)+responsiveSize/3+10,width/(8/7),height/(8/7));
-	noStroke(); // para que afecte al texto
+	mainArea();
+
+	noStroke(); // para que no afecte al texto
 
 	//texto
 	textSize(responsiveSize);
@@ -96,7 +101,7 @@ function menu()
 	importarBtn.style('color','white');
 	importarBtn.style('padding', responsiveSize/2+'px');
 	importarBtn.style('text-aling','center');
-	importarBtn.style('display','inline-block');
+	importarBtn.style('display','block');
 	importarBtn.style('font-size','16px');
 	importarBtn.mousePressed(function (){
 		loadStrings("currentMaze.txt", createMaze);
@@ -110,7 +115,7 @@ function menu()
 	generarBtn.style('color','white');
 	generarBtn.style('padding', responsiveSize/2+'px');
 	generarBtn.style('text-aling','center');
-	generarBtn.style('display','inline-block');
+	generarBtn.style('display','block');
 	generarBtn.style('font-size','16px');
 	generarBtn.mousePressed(function (){
 		//aqui va algo muy hd
@@ -122,14 +127,60 @@ function menu()
 	fill(255);
 }
 
-function createMaze(result)//result es el arreglo que recibio
+function createMaze(matriz)//matriz es el arreglo que recibo
 {
-	console.log(result);
-	console.log(result[0]);
+	importarBtn.style('display','none');
+	generarBtn.style('display','none');
+
+	background(255);
+	
+	//rectangulo principal
+	mainArea();
+
+	strokeWeight(4); // para los cuadritos mas pequeños
+	stroke(0); // paar los cuadritos mas pequeños
+
+	//console.log(matriz);
+
+	var filas = matriz[0].split(" ")[0];
+	var columnas = matriz[0].split(" ")[1];
+
+	var anchoCuadritos = ((100/columnas)*anchoMaze)/100
+	var altoCuadritos = ((100/filas)*altoMaze)/100;
+	var xposCuadrito = xposMaze;
+	var yposCuadrito = yposMaze;
+
+	for(var i = 1; i <= filas; i++)
+	{
+		xposCuadrito = xposMaze;
+		for(var j = 0; j < columnas; j++)
+		{
+			if(matriz[i].split("")[j] == 0)
+			{
+				fill(255);
+			}
+			else
+			{
+				fill(0);
+			}
+			rect(xposCuadrito,yposCuadrito,anchoCuadritos,altoCuadritos);
+			xposCuadrito += anchoCuadritos;
+		}
+		yposCuadrito += altoCuadritos;
+	}
 }
 
+function mainArea()
+{
+	stroke(40);//color
+	strokeWeight(9);
+	rect(xposMaze,yposMaze,anchoMaze,altoMaze);
+}
+
+/*
 function draw() // si se elimina quitar los loops de la foto
 {
 	if (mouseIsPressed)
 	ellipse(mouseX, mouseY, 80, 80);
 }
+*/
