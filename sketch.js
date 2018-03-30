@@ -9,12 +9,12 @@
 var generarBtn, fotoBtn, importarBtn, pasosBtn, restartBtn;
 //pasos (cadena de los pasos dados)
 var steps = '';
-//para tamaños de font y padding de los botones
+//para tamaños de font, padding de los botones, ancho y alto del area principal
 var responsiveSize = innerWidth*(1/25);
-var anchoMaze = innerWidth/(8/7);
-var altoMaze = innerHeight/(8/7);
-var xposMaze = innerWidth*(1/16);
-var yposMaze = innerHeight*(1/16)+responsiveSize/3+10;
+var anchoMaze = innerWidth/(4/3);
+var altoMaze = innerHeight/(6/5);
+var xposMaze = innerWidth*(1/9);
+var yposMaze = innerHeight*(1/16)+(responsiveSize/3)+10;
 
 function setup()
 {
@@ -57,9 +57,9 @@ function setup()
 	fotoBtn.style('display','inline-block');
 	fotoBtn.style('font-size','16px');
 	fotoBtn.mousePressed(function (){
-		noLoop();
+		//noLoop();
 		save('my.png');
-		loop();
+		//loop();
 	});
 
 	//boton reiniciar
@@ -80,22 +80,18 @@ function setup()
 
 function menu()
 {
-	background(255);
-
 	//rectangulo
 	mainArea();
 
-	noStroke(); // para que no afecte al texto
-
 	//texto
 	textSize(responsiveSize);
-	fill(0, 102, 153);
+	fill(0, 102, 153);//azul
 	var titulo = 'Maze Simulator';
-	text(titulo, width/2 - textWidth(titulo)/2.3, height/2.5);
+	text(titulo, width/2.1 - textWidth(titulo)/2.3, height/2.5);
 
 	//boton cargar laberinto
 	importarBtn = createButton('Load Maze');
-	importarBtn.position(width/2.8,height/2);
+	importarBtn.position(width/3,height/2);
 	importarBtn.style('background-color','#4CAF50');
 	importarBtn.style('border', 'none');
 	importarBtn.style('color','white');
@@ -109,7 +105,7 @@ function menu()
 
 	//boton crear laberinto con algoritmo
 	generarBtn = createButton('Create Maze');
-	generarBtn.position((width/1.8),height/2);
+	generarBtn.position((width/1.95),height/2);
 	generarBtn.style('background-color','#4CAF50');
 	generarBtn.style('border', 'none');
 	generarBtn.style('color','white');
@@ -120,61 +116,69 @@ function menu()
 	generarBtn.mousePressed(function (){
 		//aqui va algo muy hd
 	});
-
-	//regresar todo a la normalidad
-	strokeWeight(1); 
-	stroke(1);
-	fill(255);
 }
 
 function createMaze(matriz)//matriz es el arreglo que recibo
 {
-	importarBtn.style('display','none');
-	generarBtn.style('display','none');
+	//console.log(matriz);
 
-	background(255);
-	
 	//rectangulo principal
 	mainArea();
 
-	strokeWeight(4); // para los cuadritos mas pequeños
-	stroke(0); // paar los cuadritos mas pequeños
-
-	//console.log(matriz);
+	importarBtn.style('display','none');
+	generarBtn.style('display','none');
 
 	var filas = matriz[0].split(" ")[0];
-	var columnas = matriz[0].split(" ")[1];
+	var columnas = matriz[0].split(" ")[1];	
 
 	var anchoCuadritos = ((100/columnas)*anchoMaze)/100
 	var altoCuadritos = ((100/filas)*altoMaze)/100;
 	var xposCuadrito = xposMaze;
 	var yposCuadrito = yposMaze;
+	textSize(0);
 
 	for(var i = 1; i <= filas; i++)
 	{
 		xposCuadrito = xposMaze;
+		noStroke();
+		fill(0);
+		text(i-1,xposCuadrito-30, yposCuadrito+altoCuadritos/2);
 		for(var j = 0; j < columnas; j++)
 		{
 			if(matriz[i].split("")[j] == 0)
-			{
-				fill(255);
-			}
-			else
-			{
-				fill(0);
-			}
+				fill(255); //blanco
+			else 
+				fill(0); //negro
+
+			strokeWeight(4); // para los cuadritos mas pequeños
+			stroke(0); // para los cuadritos mas pequeños
 			rect(xposCuadrito,yposCuadrito,anchoCuadritos,altoCuadritos);
+
+			if(i == filas)//es el ultimo
+			{
+				noStroke();
+				fill(0);
+				text(j,xposCuadrito+anchoCuadritos/2, yposCuadrito + altoCuadritos + 25);
+			}
+
 			xposCuadrito += anchoCuadritos;
 		}
 		yposCuadrito += altoCuadritos;
 	}
+
+		
 }
 
 function mainArea()
 {
+	background(255); // para limpiar todo
+	fill(255);
 	stroke(40);//color
-	strokeWeight(9);
+	strokeWeight(8);
 	rect(xposMaze,yposMaze,anchoMaze,altoMaze);
+
+	//resetear
+	noStroke(); 
 }
 
 /*
