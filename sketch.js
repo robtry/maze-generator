@@ -26,6 +26,7 @@ var currentPos;
 var finalPos;
 var initialPos;
 var poderMover = false;
+var win = false;
 
 //tamaño de los cuadritos del maze
 var anchoCuadritos;
@@ -91,8 +92,10 @@ function setup()
 	restartBtn.style('font-size','16px');
 	restartBtn.mousePressed(function () {
 		menu();
+		poderMover = false;
+		win = false;
+		steps = '';
 	});
-	poderMover = false;
 	/*================================*/
 }
 
@@ -141,8 +144,8 @@ function mainArea()
 	background(255); // para limpiar todo
 	fill(255);
 	stroke(40);//color
-	strokeWeight(8);
-	rect(xposMaze,yposMaze,anchoMaze,altoMaze);
+	strokeWeight(8);//ancho del area principal
+	rect(xposMaze,yposMaze,anchoMaze,altoMaze); //dibujar area principal
 
 	//resetear
 	noStroke(); 
@@ -219,7 +222,10 @@ function keyPressed() {
 			else if(matriz[currentPos.x][currentPos.y-1] == 1)
 				alertCollision();
 			else
+			{
 				currentPos.y -= 1; //columnas
+				steps += 'L';
+			}
 		}
 		else if (keyCode === RIGHT_ARROW)
 		{
@@ -228,7 +234,10 @@ function keyPressed() {
 			else if(matriz[currentPos.x][currentPos.y+1] == 1)
 				alertCollision();
 			else
+			{
 				currentPos.y += 1; //columnas
+				steps += 'R';
+			}
 		}
 		else if (keyCode === UP_ARROW)
 		{
@@ -237,7 +246,10 @@ function keyPressed() {
 			else if(matriz[currentPos.x-1][currentPos.y] == 1)
 				alertCollision();
 			else
+			{
 				currentPos.x -= 1; // filas
+				steps += 'U'
+			}
 		}
 		else if (keyCode === DOWN_ARROW)
 		{
@@ -246,12 +258,17 @@ function keyPressed() {
 			else if(matriz[currentPos.x+1][currentPos.y] == 1)
 				alertCollision();
 			else
+			{
 				currentPos.x += 1; // filas
+				steps += 'D';
+			}
 		}
 		else if (keyCode === 69) //e
 		{
 			currentPosition();
 		}
+
+		checkWin();
 		drawMaze();
 	}
 }
@@ -264,6 +281,15 @@ function alertLimit()
 function alertCollision()
 {
 	console.log("no puedes pasar");
+}
+
+function checkWin()
+{
+	if(currentPos.equals(finalPos.x,finalPos.y)) 
+	{
+		win = true
+		poderMover = false;
+	}
 }
 
 function drawMaze()
@@ -286,10 +312,10 @@ function drawMaze()
 		text(i,xposCuadrito-30, yposCuadrito+altoCuadritos/2);
 		for(var j = 0; j < matriz[0].length; j++)
 		{
-			if(i == initialPos.x && j == initialPos.y)
-				fill("#27ae60");
+			if(i == currentPos.x && j == currentPos.y)
+				!win? fill("#27ae60") : fill("#e74c3c")
 			else if(i == finalPos.x && j == finalPos.y)
-				fill("#e67e22");
+				fill("#e67e22"); // naranja
 			else if(matriz[i][j] == 0)
 				fill(255); //blanco
 			else 
