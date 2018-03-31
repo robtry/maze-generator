@@ -2,7 +2,7 @@
 #>= Maze Simulator
 #>= Author: Roberto Gervacio ~~ Mx ~~
 #>= Start Data: 11-03-18
-#>= Last Update: 29-03-18
+#>= Last Update: 31-03-18
 #>= Aditional Comments: using p5.js
 ===================================================*/
 //botones
@@ -18,13 +18,14 @@ var altoMaze = innerHeight/(6/5);
 var xposMaze = innerWidth*(1/9);
 var yposMaze = innerHeight*(1/16)+(responsiveSize/3)+10;
 
-//matriz que contiene el maze
+//matriz que contiene el maze matriz[filas][columnas];
 var matriz;
 
 //posiciones del control
 var currentPos;
 var finalPos;
 var initialPos;
+var poderMover = false;
 
 //tamaño de los cuadritos del maze
 var anchoCuadritos;
@@ -91,6 +92,7 @@ function setup()
 	restartBtn.mousePressed(function () {
 		menu();
 	});
+	poderMover = false;
 	/*================================*/
 }
 
@@ -171,10 +173,11 @@ function copyMaze(matrizLeida)//matrizLeida es el arreglo que leyo
 		}
 	}
 
-	//depues de que se lleno la matriz selccionar el punto final
+	//depues de que se lleno la matriz selccionar el punto final, e inicial
 	chooseFinalPosition();
 	chooseInitialPosition();
 	drawMaze();
+	poderMover = true;
 }
 
 function chooseFinalPosition()
@@ -196,14 +199,72 @@ function chooseFinalPosition()
 
 function chooseInitialPosition()
 {
-	initialPos = createVector(matriz.length-1,0);
+	initialPos = createVector(matriz.length-1,0); // siempre n-1,0
+	currentPos = initialPos;
 }
 
 function currentPosition()
 {
 
+	console.log('cordenadas actuales:[' +currentPos.x+']['+currentPos.y+']' );
 }
 
+function keyPressed() {
+	if(poderMover)
+	{
+		if (keyCode === LEFT_ARROW)
+		{
+			if(currentPos.y-1 < 0)
+				alertLimit();
+			else if(matriz[currentPos.x][currentPos.y-1] == 1)
+				alertCollision();
+			else
+				currentPos.y -= 1; //columnas
+		}
+		else if (keyCode === RIGHT_ARROW)
+		{
+			if(currentPos.y+1 > matriz[0].length-1)
+				alertLimit();
+			else if(matriz[currentPos.x][currentPos.y+1] == 1)
+				alertCollision();
+			else
+				currentPos.y += 1; //columnas
+		}
+		else if (keyCode === UP_ARROW)
+		{
+			if(currentPos.x-1 < 0)
+				alertLimit();
+			else if(matriz[currentPos.x-1][currentPos.y] == 1)
+				alertCollision();
+			else
+				currentPos.x -= 1; // filas
+		}
+		else if (keyCode === DOWN_ARROW)
+		{
+			if(currentPos.x+1 > matriz.length-1)
+				alertLimit();
+			else if(matriz[currentPos.x+1][currentPos.y] == 1)
+				alertCollision();
+			else
+				currentPos.x += 1; // filas
+		}
+		else if (keyCode === 69) //e
+		{
+			currentPosition();
+		}
+		drawMaze();
+	}
+}
+
+function alertLimit()
+{
+	console.log("te pasaste del maze");
+}
+
+function alertCollision()
+{
+	console.log("no puedes pasar");
+}
 
 function drawMaze()
 {
