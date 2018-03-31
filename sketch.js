@@ -20,6 +20,7 @@ var yposMaze = innerHeight*(1/16)+(responsiveSize/3)+10;
 
 //matriz que contiene el maze matriz[filas][columnas];
 var matriz;
+var matrizPass; //donde ya pasó
 
 //posiciones del control
 var currentPos;
@@ -159,9 +160,11 @@ function copyMaze(matrizLeida)//matrizLeida es el arreglo que leyo
 	var columnas = matrizLeida[0].split(" ")[1];	
 
 	matriz = new Array(filas);
+	matrizPass = new Array(filas);
 	for(var i = 0; i < filas; i++)
 	{
 		matriz[i] = new Array(columnas);
+		matrizPass[i] = new Array(columnas);
 	}
 
 	anchoCuadritos = ((100/columnas)*anchoMaze)/100
@@ -172,7 +175,8 @@ function copyMaze(matrizLeida)//matrizLeida es el arreglo que leyo
 	{
 		for(var j = 0; j < columnas; j++)
 		{
-			matriz[i-1][j] = matrizLeida[i].split("")[j]
+			matriz[i-1][j] = matrizLeida[i].split("")[j];
+			matrizPass[i-1][j] = null; 
 		}
 	}
 
@@ -204,11 +208,11 @@ function chooseInitialPosition()
 {
 	initialPos = createVector(matriz.length-1,0); // siempre n-1,0
 	currentPos = initialPos;
+	addPass();
 }
 
 function currentPosition()
 {
-
 	console.log('cordenadas actuales:[' +currentPos.x+']['+currentPos.y+']' );
 }
 
@@ -225,6 +229,7 @@ function keyPressed() {
 			{
 				currentPos.y -= 1; //columnas
 				steps += 'L';
+				addPass();
 			}
 		}
 		else if (keyCode === RIGHT_ARROW)
@@ -237,6 +242,7 @@ function keyPressed() {
 			{
 				currentPos.y += 1; //columnas
 				steps += 'R';
+				addPass();
 			}
 		}
 		else if (keyCode === UP_ARROW)
@@ -248,7 +254,8 @@ function keyPressed() {
 			else
 			{
 				currentPos.x -= 1; // filas
-				steps += 'U'
+				steps += 'U';
+				addPass();
 			}
 		}
 		else if (keyCode === DOWN_ARROW)
@@ -261,6 +268,7 @@ function keyPressed() {
 			{
 				currentPos.x += 1; // filas
 				steps += 'D';
+				addPass();
 			}
 		}
 		else if (keyCode === 69) //e
@@ -292,6 +300,11 @@ function checkWin()
 	}
 }
 
+function addPass()
+{
+	matrizPass[currentPos.x][currentPos.y] = 'algo'; // pintado
+}
+
 function drawMaze()
 {
 	//rectangulo principal
@@ -313,9 +326,11 @@ function drawMaze()
 		for(var j = 0; j < matriz[0].length; j++)
 		{
 			if(i == currentPos.x && j == currentPos.y)
-				!win? fill("#27ae60") : fill("#e74c3c")
+				!win? fill("#27ae60") : fill("#e74c3c") //verde y rojo
 			else if(i == finalPos.x && j == finalPos.y)
 				fill("#e67e22"); // naranja
+			else if(matrizPass[i][j] != null)
+				fill("#1abc9c");
 			else if(matriz[i][j] == 0)
 				fill(255); //blanco
 			else 
