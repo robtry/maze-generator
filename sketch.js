@@ -5,6 +5,8 @@
 #>= Last Update: 31-03-18
 #>= Aditional Comments: using p5.js
 ===================================================*/
+/* //////////////////// boolean maze
+
 //botones
 var generarBtn, fotoBtn, importarBtn, pasosBtn, restartBtn;
 
@@ -35,13 +37,14 @@ var altoCuadritos;
 var xposCuadrito;
 var yposCuadrito;
 
+
 function setup()
 {
 	createCanvas(innerWidth, innerHeight/(100/99));
 
 	menu();
 
-	/*======= ACOMODAR BOTONES =======*/
+	// acomodar botnoes
 	var space = 140; //espacio entre botones
 
 	//boton exportar pasos
@@ -56,12 +59,12 @@ function setup()
 	pasosBtn.style('font-size','16px');
 	pasosBtn.mousePressed(function (){
 		console.log(steps);
-		/* DESCOMENTAR PARA GUARDAR
-		var writer = createWriter('historial.txt');
-		writer.print(steps);
-		writer.close();
-		writer.clear()
-		*/
+		//DESCOMENTAR PARA GUARDAR
+		//var writer = createWriter('historial.txt');
+		//writer.print(steps);
+		//writer.close();
+		//writer.clear()
+		
 	});
 
 	//boton tomar foto
@@ -97,8 +100,8 @@ function setup()
 		win = false;
 		steps = '';
 	});
-	/*================================*/
 }
+
 
 function menu()
 {
@@ -216,7 +219,8 @@ function currentPosition()
 	console.log('cordenadas actuales:[' +currentPos.x+']['+currentPos.y+']' );
 }
 
-function keyPressed() {
+function keyPressed()
+{
 	if(poderMover)
 	{
 		if (keyCode === LEFT_ARROW)
@@ -283,12 +287,12 @@ function keyPressed() {
 
 function alertLimit()
 {
-	console.log("te pasaste del maze");
+	console.log("fuera de limite");
 }
 
 function alertCollision()
 {
-	console.log("no puedes pasar");
+	console.log("no puedes pasar, hay una pared");
 }
 
 function checkWin()
@@ -297,6 +301,7 @@ function checkWin()
 	{
 		win = true
 		poderMover = false;
+		console.log("LLegaste a la meta");
 	}
 }
 
@@ -326,11 +331,11 @@ function drawMaze()
 		for(var j = 0; j < matriz[0].length; j++)
 		{
 			if(i == currentPos.x && j == currentPos.y)
-				!win? fill("#27ae60") : fill("#e74c3c") //verde y rojo
+				!win? fill("#2980b9") : fill("#e74c3c") //azul y rojo
 			else if(i == finalPos.x && j == finalPos.y)
 				fill("#e67e22"); // naranja
 			else if(matrizPass[i][j] != null)
-				fill("#1abc9c");
+				fill("#1a989c");
 			else if(matriz[i][j] == 0)
 				fill(255); //blanco
 			else 
@@ -353,10 +358,229 @@ function drawMaze()
 	}
 }
 
-/*
-function draw() // si se elimina quitar los loops de la foto
-{
-	if (mouseIsPressed)
-	ellipse(mouseX, mouseY, 80, 80);
-}
 */
+
+/*********************
+**********************
+*** MAZE GENERATOR ***
+**********************
+*********************/
+//https://en.wikipedia.org/wiki/Maze_generation_algorithm#Recursive_backtracker
+
+
+var colsGen=0, rowsGen=0;
+var t = 10; // ancho de cada cuadro
+var cuadritosAll = []; // el de una sola dimension funciona
+var currentCelda; // cuadro actual siendo visitado
+var stack = []; //pila que es necesaria 
+
+function setup()
+{
+	createCanvas(800,600);
+	//definir en numero de columas y filas
+	colsGen = Math.floor(width/t);
+	rowsGen = Math.floor(height/t);
+	//console.log(colsGen);
+	//console.log(rowsGen);
+	//crear cuadritos
+	for(var i = 0; i < rowsGen; i++)
+	{
+		for(var j = 0; j < colsGen; j++)
+		{
+			cuadritosAll.push(new Cuadro(i,j)); // arreglo con toods los cuadritos			
+		}
+	}
+
+	//1.- Make the initial cell the current cell and mark it as visited
+		currentCelda = cuadritosAll[0];
+		currentCelda.visited = true;
+
+	//frameRate(4);
+}
+
+function draw()
+{
+	background("#27ae60")
+	for(var i = 0; i < cuadritosAll.length; i++)
+	{
+		cuadritosAll[i].show(); // metodo show, es public y existe en Cuadro
+	}
+
+	//2.- While there are unvisited cells
+
+	//2.1.- If the current cell has any neighbours which have not been visited || lo hace el metodo checkVecinos()
+		//2.1.1.- Choose randomly one of the unvisited neighbours || lo hace el metodo checkVecinos()
+		var nextCelda = currentCelda.checkVecinos();			
+
+		if(nextCelda) // si no regreso undefined, o sea hay un vecino que no ha sido visitado
+		{
+			//2.1.2.- Push the current cell to the stack
+			stack.push(currentCelda);
+			//2.1.3.- Remove the wall between the current cell and the chosen cell || lo hace removeWalls()
+			Cuadro.removeWalls(currentCelda, nextCelda);
+			//2.1.4.- Make the chosen cell the current cell and mark it as visited
+			currentCelda = nextCelda;
+			currentCelda.visited = true; 
+		}
+	//2.2.- Else if stack is not empty 
+		else if(stack.length > 0)
+		{
+			//2.2.1.- Pop a cell from the stack
+			var cell = stack.pop();
+			//2.2.2.- Make it the current cell
+			currentCelda = cell;
+		}
+		else{
+			noLoop();
+		}
+		currentCelda.resaltar();
+}
+
+
+
+function Cuadro(i,j) // es lo equivalente a un constructor
+{
+	this.i = i;
+	this.j = j;
+	this.walls =[true, true, true, true];
+	//..........[top, rigth, bottom, left];
+	this.visited = false;
+
+	this.show = function()
+	{
+		var x = this.j*t; //columnas
+		var y = this.i*t; //filas
+
+		if(this.visited)
+		{
+			noStroke();
+			//fill(255,0,255,100); si se pone alfa puede ir hastra abajo
+			fill("#2c3e50");
+			rect(x,y,t,t); //no se van a dibujar con rectangulos, sino con lineas
+		}
+
+		stroke(255);
+		//cada linea empieza en la esquina de cada cuadro
+		if (this.walls[0])
+		{
+			line(x  , y  , x+t, y); // top
+		}
+
+		if (this.walls[1])
+		{
+			line(x+t, y  , x+t, y+t); // right
+		}
+
+		if (this.walls[2])
+		{
+			line(x+t, y+t, x  , y+t); // bottom
+		}
+
+		if (this.walls[3])
+		{
+			line(x  , y+t, x  , y); // left
+		}
+
+
+	}
+
+	this.resaltar = function()
+	{
+		var x = this.j*t; //columnas
+		var y = this.i*t; //filas
+		fill(236,240,241,100);//alpha
+		noStroke();
+		rect(x,y,t,t);
+	}
+
+	var index = function(i,j) //queda como funcion privada
+	{
+		if(i < 0 || j < 0 || i > rowsGen-1 || j > colsGen-1)
+		{
+			//son index invalidos
+			return -1;
+		}
+		else
+		{
+			//indexFila*numeroColums + indexColum
+			return i*colsGen + j;
+			// la formula anterior regresa la posicion, como si fuera un arreglo bidemsional
+			//siendo unidimensional 
+		}
+	}
+
+	this.checkVecinos = function()
+	{
+		//cada celda tiene 4 vecinos
+		//        [i-1,j]
+		// [i,j-1] [i,j] [i,j+1]
+		//        [i+1,j]
+		var vecinos = [];
+		// como es de una sola dimension
+		var top =    cuadritosAll[index(i-1,j)];
+		var right =  cuadritosAll[index(i,j+1)];
+		var bottom = cuadritosAll[index(i+1,j)];
+		var left =   cuadritosAll[index(i,j-1)];
+		//si reciben -1, toman el valor de undefined,entonces hay que ver que sean validos:
+
+		//2.1.- If the current cell has any neighbours which have not been visited
+
+		if (top && !top.visited) vecinos.push(top);
+		if (right && !right.visited)  vecinos.push(right);
+		if (bottom && !bottom.visited) vecinos.push(bottom);
+		if (left && !left.visited)   vecinos.push(left);
+
+		//2.1.1.- Choose randomly one of the unvisited neighbours
+		if(vecinos.length > 0)
+		{
+			var r = Math.floor(random(0,vecinos.length))
+			return vecinos[r];
+		}
+		else
+		{
+			return undefined;
+		}
+
+	}
+
+	Cuadro.removeWalls = function (a,b)// funcion estatica
+	{
+		//cuatro escenarios
+		//1: [current][next] => current.j - next.j = 1; => remover izquierdo y derecho
+		//2: [next][current] => current.j - next.j = -1; => remover derecho e izquierdo
+		//3: [current]       => current.i - next.i = -1; => remover abajo y arriba
+		//    [next]
+		//4:  [next]         => current.i - next.i = 1; => remove arriba y abajo
+		//   [current]
+
+		//[top, rigth, bottom, left];
+		//[0  ,   1   ,   2  ,  3  ];
+
+		var x = a.j - b.j;
+		if(x == 1)
+		{
+			a.walls[3] = false;
+			b.walls[1] = false;
+		}
+		else if(x == -1)
+		{
+			a.walls[1] = false;
+			b.walls[3] = false;
+		}
+
+		var y = a.i - b.i;
+
+		if(y == 1)
+		{
+			a.walls[0] = false;
+			b.walls[2] = false;
+		}
+		else if(y == -1)
+		{
+			a.walls[2] = false;
+			b.walls[0] = false;
+		}
+
+	}
+
+}
