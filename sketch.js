@@ -369,7 +369,7 @@ function drawMaze()
 
 
 var colsGen=0, rowsGen=0;
-var t = 10; // ancho de cada cuadro
+var t = 40; // ancho de cada cuadro
 var cuadritosAll = []; // el de una sola dimension funciona
 var currentCelda; // cuadro actual siendo visitado
 var stack = []; //pila que es necesaria 
@@ -431,9 +431,9 @@ function draw()
 			currentCelda = cell;
 		}
 		else{
-			noLoop();
+			noLoop();//detente
 		}
-		currentCelda.resaltar();
+		currentCelda.resaltar();//para que desaparesca ponerlo dentro del if
 }
 
 
