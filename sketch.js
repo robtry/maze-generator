@@ -5,7 +5,7 @@
 #>= Last Update: 31-03-18
 #>= Aditional Comments: using p5.js
 ===================================================*/
-/* //////////////////// boolean maze
+/*//////////////////// boolean maze
 
 //botones
 var generarBtn, fotoBtn, importarBtn, pasosBtn, restartBtn;
@@ -357,8 +357,9 @@ function drawMaze()
 		yposCuadrito += altoCuadritos;
 	}
 }
-
 */
+
+
 
 /*********************
 **********************
@@ -369,13 +370,14 @@ function drawMaze()
 
 
 var colsGen=0, rowsGen=0;
-var t = 40; // ancho de cada cuadro
+var t = 10; // ancho de cada cuadro
 var cuadritosAll = []; // el de una sola dimension funciona
 var currentCelda; // cuadro actual siendo visitado
 var stack = []; //pila que es necesaria 
 
 function setup()
-{
+{	
+	//frameRate(4);
 	createCanvas(800,600);
 	//definir en numero de columas y filas
 	colsGen = Math.floor(width/t);
