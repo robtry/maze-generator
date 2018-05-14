@@ -5,7 +5,7 @@
 #>= Last Update: 31-03-18
 #>= Aditional Comments: using p5.js
 ===================================================*/
-/*//////////////////// boolean maze
+//////////////////// boolean maze
 
 //botones
 var generarBtn, fotoBtn, importarBtn, pasosBtn, restartBtn;
@@ -357,7 +357,7 @@ function drawMaze()
 		yposCuadrito += altoCuadritos;
 	}
 }
-*/
+
 
 
 
@@ -365,7 +365,7 @@ function drawMaze()
 **********************
 *** MAZE GENERATOR ***
 **********************
-*********************/
+*********************
 //https://en.wikipedia.org/wiki/Maze_generation_algorithm#Recursive_backtracker
 
 
@@ -586,3 +586,4 @@ function Cuadro(i,j) // es lo equivalente a un constructor
 	}
 
 }
+*/
