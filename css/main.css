@@ -1,0 +1,107 @@
+* {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+a {
+	text-decoration: none;
+	color: rgb(61, 146, 201);
+}
+a:hover,
+a:focus {
+	text-decoration: underline;
+}
+
+#layout {
+	padding: 0;
+}
+
+.header {
+	text-align: center;
+	top: auto;
+	margin: 2.8em auto;
+}
+
+.sidebar {
+	background: rgb(61, 79, 93);
+	color: #fff;
+}
+
+.brand-tagline {
+	margin: 0;
+	font-weight: 300;
+	color: rgb(176, 202, 219);
+}
+
+.nav-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+	*display: inline;
+	zoom: 1;
+}
+.nav-item a {
+	background: transparent;
+	border: 2px solid rgb(176, 202, 219);
+	color: #fff;
+	margin-top: 1em;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	font-size: 85%;
+}
+.nav-item a:hover,
+.nav-item a:focus {
+	border: 2px solid rgb(61, 146, 201);
+	text-decoration: none;
+}
+
+
+.content {
+	padding: 0em 1em 0;
+}
+
+.content-subhead {
+	text-transform: uppercase;
+	color: #aaa;
+	border-bottom: 1px solid #eee;
+	padding: 0.4em 0;
+	font-size: 80%;
+	font-weight: 500;
+	letter-spacing: 0.1em;
+}
+
+.negro{
+	color : black;
+}
+
+textarea{
+	width: 80%;
+	margin: 0 auto;
+}
+
+@media (min-width: 48em) {
+	.content {
+		padding: 0em 3em 0;
+		margin-left: 25%;
+	}
+	
+	.header {
+		margin: 10% 2em 0;
+		text-align: right;
+	}
+
+	textarea{
+		width: 100%;
+		resize: none;
+	}
+
+	.sidebar {
+		position: fixed;
+		top: 0;
+		bottom: 0;
+	}
+}
