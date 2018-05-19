@@ -1,11 +1,3 @@
-/*=================================================
-#>= Maze Simulator
-#>= Author: Roberto Gervacio ~~ Mx ~~
-#>= Start Data: 11-03-18
-#>= Last Update: 31-03-18
-#>= Aditional Comments: using p5.js
-===================================================*/
-//////////////////// boolean maze
 
 //botones
 var generarBtn, fotoBtn, importarBtn, pasosBtn, restartBtn;

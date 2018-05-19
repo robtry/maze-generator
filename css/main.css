@@ -34,28 +34,44 @@ a:focus {
 	color: rgb(176, 202, 219);
 }
 
-.nav-list {
+input{
+	width: 30%;
+}
+
+.nav-item {
 	margin: 0;
 	padding: 0;
 	list-style: none;
-}
-.nav-item {
 	display: inline-block;
 	*display: inline;
 	zoom: 1;
 }
-.nav-item a {
+
+.nav-item button {
 	background: transparent;
 	border: 2px solid rgb(176, 202, 219);
 	color: #fff;
-	margin-top: 1em;
+	margin-top: 0.4em;
 	letter-spacing: 0.05em;
 	text-transform: uppercase;
 	font-size: 85%;
 }
-.nav-item a:hover,
-.nav-item a:focus {
+
+.nav-item button:hover,
+.nav-item button:focus {
 	border: 2px solid rgb(61, 146, 201);
+	text-decoration: none;
+}
+
+.nav-item .button-success button:hover,
+.nav-item .button-success button:focus {
+	border: 2px solid rgb(28, 184, 65);
+	text-decoration: none;
+}
+
+.nav-item .button-warning button:hover,
+.nav-item .button-warning button:focus {
+	border: 2px solid rgb(223, 117, 20);
 	text-decoration: none;
 }
 
@@ -64,13 +80,11 @@ a:focus {
 	padding: 0em 1em 0;
 }
 
-.content-subhead {
+#subhead {
 	text-transform: uppercase;
-	color: #aaa;
 	border-bottom: 1px solid #eee;
 	padding: 0.4em 0;
 	font-size: 80%;
-	font-weight: 500;
 	letter-spacing: 0.1em;
 }
 
@@ -81,6 +95,13 @@ a:focus {
 textarea{
 	width: 80%;
 	margin: 0 auto;
+}
+
+.button-error{
+	background: rgb(202, 60, 60); 
+	color : white ;
+	border-radius: 4px;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 }
 
 @media (min-width: 48em) {
