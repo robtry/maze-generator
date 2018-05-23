@@ -1,4 +1,4 @@
-
+/*
 //botones
 var generarBtn, fotoBtn, importarBtn, pasosBtn, restartBtn;
 
@@ -351,13 +351,13 @@ function drawMaze()
 }
 
 
-
+*/
 
 /*********************
 **********************
 *** MAZE GENERATOR ***
 **********************
-*********************
+**********************/
 //https://en.wikipedia.org/wiki/Maze_generation_algorithm#Recursive_backtracker
 
 
@@ -578,4 +578,3 @@ function Cuadro(i,j) // es lo equivalente a un constructor
 	}
 
 }
-*/
