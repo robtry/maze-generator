@@ -85,15 +85,15 @@ class MazeGenerator
 		//[top, rigth, bottom, left];
 
 		var cadena = "";
-		for (var i = 0; i < this.colsGen; i++)
+		for (var i = 0; i < this.rowsGen; i++)
 		{
 			//top
 			cadena = "";
-			for(var j = 0; j < this.rowsGen; j++)
+			for(var j = 0; j < this.colsGen; j++)
 			{
 				if(i != 0)
 				{
-					if(j != this.rowsGen-1)
+					if(j != this.colsGen-1)
 					{
 						if (this.cuadritosAll[i*this.colsGen+j].walls[0]) cadena+="11"
 						else (this.cuadritosAll[(i-1)*this.colsGen+j].walls[1] || this.cuadritosAll[i*this.colsGen+j].walls[1]) ? cadena+="01" : cadena+= "00"
@@ -106,9 +106,9 @@ class MazeGenerator
 			
 			//derechas
 			cadena = "";
-			for(var j = 0; j < this.rowsGen; j++)
+			for(var j = 0; j < this.colsGen; j++)
 			{
-				if(j != this.rowsGen-1) (this.cuadritosAll[i*this.colsGen+j].walls[1]) ? cadena+="01" : cadena+="00"
+				if(j != this.colsGen-1) (this.cuadritosAll[i*this.colsGen+j].walls[1]) ? cadena+="01" : cadena+="00"
 				else cadena += "0"
 			}
 			console.log(cadena);
@@ -116,11 +116,11 @@ class MazeGenerator
 		}
 	}
 
-	crear(c, r)
+	crear(r, c)
 	{
-		this.colsGen = (c + 1) / 2;
 		this.rowsGen = (r + 1) / 2;
-		print(this.colsGen + " " + this.rowsGen);
+		this.colsGen = (c + 1) / 2;
+		//print(this.colsGen + " " + this.rowsGen);
 
 		while(this.cuadritosAll.length > 0)
 		{
@@ -166,7 +166,7 @@ class MazeGenerator
 			}
 		}
 
-		print("terminado");
+		//print("terminado");
 		this.generado = true;
 		this.exportar();
 	}
@@ -385,7 +385,7 @@ function tryGenerar()
 		}
 		else
 		{
-			mg.crear(cols, rows);
+			mg.crear(rows, cols);
 			document.getElementById('subhead').innerHTML = mg.correctMessage;
 			if(document.getElementById('history').value == mg.noValidMessage)
 				document.getElementById('history').value = '';
