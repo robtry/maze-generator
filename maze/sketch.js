@@ -83,8 +83,11 @@ class MazeGenerator
 	exportar()
 	{
 		//[top, rigth, bottom, left];
-
+		var writer = createWriter('currentMaze.txt');
 		var cadena = "";
+
+		writer.print((this.rowsGen * 2 -1) +" "+ (this.colsGen * 2 - 1));
+
 		for (var i = 0; i < this.rowsGen; i++)
 		{
 			//top
@@ -102,7 +105,8 @@ class MazeGenerator
 					else (this.cuadritosAll[i*this.colsGen+j].walls[0]) ? cadena+="1" : cadena+="0"
 				}
 			}
-			console.log(cadena);
+
+			if(i != 0) writer.print(cadena);
 			
 			//derechas
 			cadena = "";
@@ -111,9 +115,10 @@ class MazeGenerator
 				if(j != this.colsGen-1) (this.cuadritosAll[i*this.colsGen+j].walls[1]) ? cadena+="01" : cadena+="00"
 				else cadena += "0"
 			}
-			console.log(cadena);
-
+			writer.print(cadena);
 		}
+
+		writer.close();
 	}
 
 	crear(r, c)
@@ -122,6 +127,7 @@ class MazeGenerator
 		this.colsGen = (c + 1) / 2;
 		//print(this.colsGen + " " + this.rowsGen);
 
+		//borrar todo
 		while(this.cuadritosAll.length > 0)
 		{
 			this.cuadritosAll.pop();
@@ -168,7 +174,6 @@ class MazeGenerator
 
 		//print("terminado");
 		this.generado = true;
-		this.exportar();
 	}
 
 	areUnVisited()
@@ -395,11 +400,10 @@ function tryGenerar()
 
 function tryExportMaze()
 {
-	/*if(mg.isGenerado())
+	if(mg.isGenerado())
 	{
-		document.getElementById('subhead').innerHTML = "Maze simulator";
 		mg.exportar();
-		print("exportando");
+		document.getElementById('subhead').innerHTML = "Exportado correctamente";
 	}
-	else document.getElementById('subhead').innerHTML = mg.noExport;*/
+	else document.getElementById('subhead').innerHTML = mg.noExport;
 }
