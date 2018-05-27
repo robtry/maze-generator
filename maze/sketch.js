@@ -2,7 +2,7 @@
 #>= Maze Simulator
 #>= Author: Roberto Gervacio ~~ Mx ~~
 #>= Start Data: 11-03-18
-#>= Last Update: 23-05-18
+#>= Last Update: 01-06-18
 #>= Aditional Comments: using p5.js
 ===================================================*/
 let rWalker; // walker de menu [Objeto]
@@ -10,7 +10,13 @@ let mg; //maze generator [Objeto]
 var anchoMaze, altoMaze; //dimesiones dinamicas del canvas
 var stage, stageTemp; //status actual, hay que limpiar
 //botones
-var generate, exportMaze;
+let generateBtn, exportMazeBtn, loadMazeBtn;
+
+/*
+|========================|
+|=========clases=========|
+|========================|
+*/
 
 class RandomWalker
 {
@@ -43,7 +49,7 @@ class RandomWalker
 	show()
 	{
 		stroke(random(255)); //color
-		strokeWeight(1); //ancho
+		strokeWeight(3); //ancho
 
 		fill(0);
 		rect(this.x,this.y,this.r,this.r);
@@ -160,7 +166,7 @@ class MazeGenerator
 				this.currentCelda.removeWalls(this.nextCelda);
 			//2.1.4.- Make the chosen cell the current cell and mark it as visited
 				this.currentCelda = this.nextCelda;
-				this.currentCelda.visited = true; 
+				this.currentCelda.visited = true;
 			}
 		//2.2.- Else if stack is not empty 
 			else if(this.stack.length > 0)
@@ -291,6 +297,12 @@ class Cuadro
 	}
 }
 
+/*
+|========================|
+|=========canvas=========|
+|========================|
+*/
+
 function setup()
 {
 	calcularMaze(); // tamaño responsive
@@ -312,10 +324,15 @@ function setup()
 	changingStage();
 
 	//botones
-	generate = select("#generar");
-	generate.mouseClicked(tryGenerar);
-	exportMaze = select("#mazeExport");
-	exportMaze.mouseClicked(tryExportMaze);
+	generateBtn = select("#generar");
+	generateBtn.mouseClicked(tryGenerar);
+
+	exportMazeBtn = select("#mazeExport");
+	exportMazeBtn.mouseClicked(tryExportMaze);
+
+	loadMazeBtn = createFileInput(tryLoadMaze);
+	loadMazeBtn.parent("loadMaze")
+
 }
 
 function draw()
@@ -327,10 +344,7 @@ function draw()
 		rWalker.show();
 		rWalker.step();
 	}
-	else if(stage = 1)
-	{
-		//
-	}
+
 }
 
 function windowResized()
@@ -347,7 +361,7 @@ function windowResized()
 
 function calcularMaze()
 {
-	(innerWidth <= 767) ? anchoMaze = innerWidth * (5/6) : anchoMaze =  innerWidth * (4/6);
+	anchoMaze = innerWidth * (95/100);
 	altoMaze = innerHeight * (6/7);
 }
 
@@ -357,7 +371,7 @@ function changingStage()
 	//rectángulo de area principal
 	stroke(0);//color
 	strokeWeight(8);//ancho del area principal
-	rect(anchoMaze/2,altoMaze/2,anchoMaze,altoMaze);
+	rect(anchoMaze/2, altoMaze/2, anchoMaze, altoMaze);
 }
 
 /*
@@ -385,6 +399,7 @@ function tryGenerar()
 			//se rompe
 			document.getElementById('history').value = mg.onlyOdd;
 			document.getElementById('subhead').innerHTML = mg.noValid;
+			//limpiar si tenia un mensaje de error
 			if(document.getElementById('history').value == mg.noValidMessage)
 				document.getElementById('history').value = '';
 		}
@@ -392,6 +407,7 @@ function tryGenerar()
 		{
 			mg.crear(rows, cols);
 			document.getElementById('subhead').innerHTML = mg.correctMessage;
+			//limpiar si tenia un mensaje de error
 			if(document.getElementById('history').value == mg.noValidMessage)
 				document.getElementById('history').value = '';
 		}
@@ -406,4 +422,17 @@ function tryExportMaze()
 		document.getElementById('subhead').innerHTML = "Exportado correctamente";
 	}
 	else document.getElementById('subhead').innerHTML = mg.noExport;
+}
+
+function tryLoadMaze(file)
+{
+	if(file.type == "text")
+	{
+		console.log("correcto");
+		console.log(file.data);
+	}
+	else
+	{
+		console.log("no valido");
+	}
 }

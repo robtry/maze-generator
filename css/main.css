@@ -20,12 +20,13 @@ a:focus {
 .header {
 	text-align: center;
 	top: auto;
-	margin: 2.8em auto;
+	padding: 1px 15px 25px 0px;
 }
 
 .sidebar {
 	background: rgb(61, 79, 93);
 	color: #fff;
+	width: 100%;
 }
 
 .brand-tagline {
@@ -77,7 +78,7 @@ input{
 
 
 .content {
-	padding: 0em 1em 0;
+	padding: 0em 0.5em 0;
 }
 
 #subhead {
@@ -95,6 +96,7 @@ input{
 textarea{
 	width: 80%;
 	margin: 0 auto;
+	resize: none;
 }
 
 .button-error{
@@ -104,14 +106,25 @@ textarea{
 	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 }
 
+.button-successs:hover{
+	background: rgb(28, 184, 65);
+	color : white;
+	transition: all 0.4s;
+}
+
+#loadMaze > input{
+	width: 65%;
+}
+
+
 @media (min-width: 48em) {
+
 	.content {
-		padding: 0em 3em 0;
-		margin-left: 25%;
+		padding: 0em 1.5em 0;
 	}
-	
+
 	.header {
-		margin: 10% 2em 0;
+		margin: 1% 2em 0;
 		text-align: right;
 	}
 
@@ -124,5 +137,22 @@ textarea{
 		position: fixed;
 		top: 0;
 		bottom: 0;
+		width: 45%;
+	}
+
+	#loadMaze > input{
+		width: 90%;
+	}
+}
+
+@media (min-width: 1030px) {
+	.sidebar {
+		width: 30%;
+	}
+}
+
+@media (min-width: 1345px) {
+	.sidebar {
+		width: 20%;
 	}
 }
