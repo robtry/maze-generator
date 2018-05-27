@@ -132,6 +132,19 @@ textarea{
 	width: 100%;
 }
 
+#dropzone{
+	border-style: dashed;
+	border-radius: 5px;
+	text-align: center;
+	padding: 1em;
+	margin-bottom: 15px;
+	width: 55%;
+}
+
+input[type=checkbox]{
+	width: 5%;
+}
+
 @media (min-width: 48em) {
 
 	.content {

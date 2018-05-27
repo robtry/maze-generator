@@ -31,26 +31,36 @@
 
 		<div class="separador"></div>
 		<h3 class="brand-tagline">Cargar</h3>
-		<div class="nav-item" id="loadMaze">
-			
-		</div>
+		<p id="dropzone" class="nav-item">
+			Drag file here
+		</p>
+		<br>
+		<div class="nav-item" id="loadMaze"> </div>
 
 		<div class="separador"></div>
-		<h3 class="brand-tagline">Pocisiones</h3>
+		<h3 class="brand-tagline">Posiciones</h3>
 		<div class="nav-item">
+			<label for="posCheck" class="pure-checkbox">
+				<input id="posCheck" type="checkbox"> Random
+			</label>
+			<br>
 			<input id = "inicioC" type="number" class="negro" placeholder="start">
 			<input id = "finC" type="number" class="negro" placeholder="end">
 			<br>
-			<button class="pure-button" id="generar">aceptar</button>
+			<button class="pure-button" id="posBtn">aceptar</button>
 		</div>
 
 		<div class="separador"></div>
-		<h3 class="brand-tagline">Tamaño Maze</h3>
+		<h3 class="brand-tagline">Tamaño</h3>
 		<div class="nav-item">
+			<label for="sizeCheck" class="pure-checkbox">
+				<input id="sizeCheck" type="checkbox"> Responsive
+			</label>
+			<br>
 			<input id = "largoM" type="number" class="negro" placeholder="width">
 			<input id = "anchoM" type="number" class="negro" placeholder="heigth">
 			<br>
-			<button class="pure-button" id="generar">crear</button>
+			<button class="pure-button" id="sizeBtn">crear</button>
 		</div>
 
 		<div class="separador"></div>

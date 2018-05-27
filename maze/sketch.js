@@ -10,7 +10,7 @@ let mg; //maze generator [Objeto]
 var anchoMaze, altoMaze; //dimesiones dinamicas del canvas
 var stage, stageTemp; //status actual, hay que limpiar
 //botones
-let generateBtn, exportMazeBtn, loadMazeBtn;
+let generateBtn, exportMazeBtn, loadMazeBtn, dropzone;
 
 /*
 |========================|
@@ -331,8 +331,10 @@ function setup()
 	exportMazeBtn.mouseClicked(tryExportMaze);
 
 	loadMazeBtn = createFileInput(tryLoadMaze);
-	loadMazeBtn.parent("loadMaze")
+	loadMazeBtn.parent("loadMaze");
 
+	dropzone = select("#dropzone");
+	dropzone.drop(tryLoadMaze);
 }
 
 function draw()
@@ -385,7 +387,7 @@ function tryGenerar()
 	var rows = parseInt(document.getElementById('rowsG').value);
 	var cols = parseInt(document.getElementById('colsG').value);
 
-	if(rows <= 0 || cols  <= 0)
+	if(rows <= 0 || cols  <= 0 || isNaN(rows) || isNaN(cols))
 	{
 		//no válido
 		document.getElementById('subhead').innerHTML = mg.noValid;
@@ -428,11 +430,20 @@ function tryLoadMaze(file)
 {
 	if(file.type == "text")
 	{
-		console.log("correcto");
 		console.log(file.data);
 	}
 	else
 	{
 		console.log("no valido");
 	}
+}
+
+function tryHighlight()
+{
+	dropzone.style('background-color', '#222');
+}
+
+function untryHighlight()
+{
+	dropzone.style('background-color', 'transparent');
 }

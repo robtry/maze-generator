@@ -1,6 +1,11 @@
 $( document ).ready(function() {
 	tamanios();
-	$("#panel-settings").fadeOut(1);
+	//$("#panel-settings").fadeOut(1);
+	togglePositionMaze(true);
+	toggleSizeMaze(true);
+	$('#sizeCheck').prop('checked', true);
+	$('#posCheck').prop('checked', true);
+	
 });
 
 window.onresize = function(event) {
@@ -10,7 +15,26 @@ window.onresize = function(event) {
 function tamanios()
 {
 	$("#history").css("height", innerHeight + "px");
-	$(".separador").css("margin-top", innerHeight * (1/20) + "px");
+	if(innerHeight <= 606)
+		$(".separador").css("margin-top", innerHeight * (1/50) + "px");
+	else
+		$(".separador").css("margin-top", innerHeight * (1/20) + "px");
+}
+
+function toggleSizeMaze(status) {
+	$('#largoM').prop('disabled', status);
+	$('#anchoM').prop('disabled', status);
+	$('#sizeBtn').prop('disabled', status);
+	$('#largoM').val('');
+	$('#anchoM').val('');
+}
+
+function togglePositionMaze(status) {
+	$("#inicioC").val('');
+	$("#finC").val('');
+	$('#inicioC').prop('disabled', status);
+	$('#finC').prop('disabled', status);
+	$('#posBtn').prop('disabled', status);
 }
 
 var escondidoSetting = true;
@@ -27,4 +51,20 @@ $("#consoleBtn").click(function() {
 
 $("#clearConsole").click(function() {
 	$("#history").val('');
+});
+
+$('#posCheck').change(function(){
+	(this.checked) ? togglePositionMaze(true) : togglePositionMaze(false)
+});
+
+$('#sizeCheck').change(function(){
+	(this.checked) ? toggleSizeMaze(true) : toggleSizeMaze(false)
+});
+
+$('#dropzone').on('dragenter', function() {
+	$(this).css({'background-color' : 'rgba(255,255,255,0.1)'});
+});
+
+$('#dropzone').on('dragleave', function() {
+	$(this).css({'background-color' : 'transparent'});
 });
