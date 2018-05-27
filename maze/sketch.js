@@ -361,8 +361,8 @@ function windowResized()
 
 function calcularMaze()
 {
-	anchoMaze = innerWidth * (95/100);
-	altoMaze = innerHeight * (6/7);
+	anchoMaze = innerWidth * (9.5/10) - 140;
+	altoMaze = innerHeight * (8.9/10);
 }
 
 function changingStage()

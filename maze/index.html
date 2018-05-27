@@ -60,19 +60,10 @@
 				<button class="pure-button" href="">coordinar</button>
 			</div>
 		</div>
-		
-<!-- 		<div class="separador"></div>
-		<h3 class="brand-tagline">Status</h3>
-		<textarea readonly class="pure-input negro" placeholder="Las respuestas se visualizarán aquí" id="history"></textarea>
-		<div class="nav-item">
-			<div class="button-success">
-				<button class="pure-button" href="">Limpiar</button>
-				<button class="pure-button" href="">Exportar</button>
-			</div>
-		</div> -->
 
 	</div>
 </div>
+
 
 <div id="layout" class="pure-g">
 
@@ -96,8 +87,12 @@
 					<i class="fa fa-cog"></i>
 				</button>
 
-				<button class="button-successs pure-button" id="historialBtn">
+				<button class="button-successs pure-button pure-button-disabled" id="consoleBtn">
 					<i class="fa fa-list-alt"></i>
+				</button>
+
+				<button class="button-successs pure-button" id="clearConsole">
+					<i class="fa fa-file"></i>
 				</button>
 
 			</div>
@@ -106,6 +101,10 @@
 		<center><div id='myContainer'></div></center>
 	</div>
 
+</div>
+
+<div id="consola">
+	<textarea readonly class="pure-input negro" placeholder="Las respuestas se visualizarán aquí" id="history"></textarea>
 </div>
 
 </body>

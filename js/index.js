@@ -1,6 +1,6 @@
 $( document ).ready(function() {
 	tamanios();
-	//$("#panel-settings").fadeOut(1);
+	$("#panel-settings").fadeOut(1);
 });
 
 window.onresize = function(event) {
@@ -9,13 +9,22 @@ window.onresize = function(event) {
 
 function tamanios()
 {
-	$("#history").css("height", innerHeight * (1/4) + "px");
+	$("#history").css("height", innerHeight + "px");
 	$(".separador").css("margin-top", innerHeight * (1/20) + "px");
 }
 
-
-var escondido = true;
+var escondidoSetting = true;
 $("#ajustesBtn").click(function() {
-	(escondido) ? $("#panel-settings").slideDown("medium") : $("#panel-settings").slideUp("medium")
-	escondido = !escondido
+	(escondidoSetting) ? $("#panel-settings").slideDown("medium") : $("#panel-settings").slideUp("medium")
+	escondidoSetting = !escondidoSetting
+});
+
+var escondidoConsole = false
+$("#consoleBtn").click(function() {
+	(escondidoConsole) ? $("#consola").slideDown("fast") : $("#consola").slideUp("fast")
+	escondidoConsole = !escondidoConsole;	
+});
+
+$("#clearConsole").click(function() {
+	$("#history").val('');
 });
