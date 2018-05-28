@@ -10,7 +10,7 @@ let mg; //maze generator [Objeto]
 var anchoMaze, altoMaze; //dimesiones dinamicas del canvas
 var stage, stageTemp; //status actual, hay que limpiar
 //botones
-let generateBtn, exportMazeBtn, loadMazeBtn, dropzone;
+let generateBtn, exportMazeBtn, loadMazeBtn, dropzone, photoBtn;
 
 /*
 |========================|
@@ -66,14 +66,16 @@ class MazeGenerator
 	constructor()
 	{
 		this.generado = false;
-		this.noValid = "datos no válidos";
-		this.noValidMessage = "Los valores para generar el laberinto, deben ser enteros positivos impares";
+		this.noValid = "Datos no válidos";
+		this.noValidMessage = "Los valores para generar el laberinto, deben ser enteros positivos";
 		this.onlyOdd = "Los valores deben ser números impares";
-		this.noExport = "no hay nada para exportar";
+		this.noExport = "No hay nada para exportar";
 		this.correctMessage = "Creado correctamente";
+		this.realRows = 0;
+		this.realCols = 0;
 		//los del algoritmo
-		this.colsGen = 0;
 		this.rowsGen = 0;
+		this.colsGen = 0;
 		this.cuadritosAll = [];
 		this.currentCelda;
 		this.nextCelda;
@@ -91,8 +93,15 @@ class MazeGenerator
 		//[top, rigth, bottom, left];
 		var writer = createWriter('currentMaze.txt');
 		var cadena = "";
+		var toPrintCols, toPrintRows;
 
-		writer.print((this.rowsGen * 2 -1) +" "+ (this.colsGen * 2 - 1));
+		if(this.realRows % 2 == 0) toPrintRows =  this.rowsGen * 2;
+		else toPrintRows = (this.rowsGen * 2) - 1;
+
+		if(this.realCols % 2 == 0) toPrintCols = this.colsGen * 2;
+		else toPrintCols = (this.colsGen * 2) - 1;
+
+		writer.print(toPrintRows +" "+ toPrintCols);
 
 		for (var i = 0; i < this.rowsGen; i++)
 		{
@@ -100,7 +109,20 @@ class MazeGenerator
 			cadena = "";
 			for(var j = 0; j < this.colsGen; j++)
 			{
-				if(i != 0)
+				if(i == 0)
+				{
+					if(this.realRows % 2 == 0)
+					{
+						//es la de arriba todos serian true
+						if(j != this.colsGen-1)
+						{
+							(this.cuadritosAll[i*this.colsGen+j].walls[1]) ? cadena += "01" : cadena += "11"
+						}
+						else (this.realCols % 2  == 0) ? cadena += "00" : cadena += "0"
+			
+					}
+				}
+				else
 				{
 					if(j != this.colsGen-1)
 					{
@@ -108,18 +130,24 @@ class MazeGenerator
 						else (this.cuadritosAll[(i-1)*this.colsGen+j].walls[1] || this.cuadritosAll[i*this.colsGen+j].walls[1]) ? cadena+="01" : cadena+= "00"
 
 					}
-					else (this.cuadritosAll[i*this.colsGen+j].walls[0]) ? cadena+="1" : cadena+="0"
+					else
+					{
+						if(this.cuadritosAll[i*this.colsGen+j].walls[0])
+							(this.realCols % 2  == 0) ? cadena += "11" : cadena += "1"
+						else
+							(this.realCols % 2  == 0) ? cadena += "00" : cadena += "0";
+					}
 				}
 			}
 
-			if(i != 0) writer.print(cadena);
+			if(i != 0 || this.realRows % 2 == 0) writer.print(cadena);
 			
 			//derechas
 			cadena = "";
 			for(var j = 0; j < this.colsGen; j++)
 			{
 				if(j != this.colsGen-1) (this.cuadritosAll[i*this.colsGen+j].walls[1]) ? cadena+="01" : cadena+="00"
-				else cadena += "0"
+				else (this.realCols % 2 == 0) ? cadena += "00" : cadena += "0"
 			}
 			writer.print(cadena);
 		}
@@ -129,8 +157,15 @@ class MazeGenerator
 
 	crear(r, c)
 	{
-		this.rowsGen = (r + 1) / 2;
-		this.colsGen = (c + 1) / 2;
+		this.realRows = r;
+		this.realCols = c;
+
+		if(r % 2 == 0) this.rowsGen = r / 2;
+		else this.rowsGen = (r + 1) / 2;
+
+		if(c % 2 == 0) this.colsGen = c / 2;
+		else this.colsGen = (c + 1) / 2;
+
 		//print(this.colsGen + " " + this.rowsGen);
 
 		//borrar todo
@@ -335,18 +370,22 @@ function setup()
 
 	dropzone = select("#dropzone");
 	dropzone.drop(tryLoadMaze);
+
+	photoBtn = select("#photo")
+	photoBtn.mousePressed(function (){
+		save('my.png');
+	});
 }
 
 function draw()
 {
-	if(stage != stageTemp){changingStage();stageTemp = stage; print("cambio");}
+	if(stage != stageTemp){changingStage(); print("cambio");}
 
 	if(stage == 0)
 	{	
 		rWalker.show();
 		rWalker.step();
 	}
-
 }
 
 function windowResized()
@@ -390,29 +429,12 @@ function tryGenerar()
 	if(rows <= 0 || cols  <= 0 || isNaN(rows) || isNaN(cols))
 	{
 		//no válido
-		document.getElementById('subhead').innerHTML = mg.noValid;
-		document.getElementById('history').value = mg.noValidMessage;
+		document.getElementById('history').value = mg.noValid + "\n\n" + mg.noValidMessage;
 	}
 	else
 	{
-		//son positivos
-		if(rows % 2 == 0 || cols % 2 == 0)
-		{
-			//se rompe
-			document.getElementById('history').value = mg.onlyOdd;
-			document.getElementById('subhead').innerHTML = mg.noValid;
-			//limpiar si tenia un mensaje de error
-			if(document.getElementById('history').value == mg.noValidMessage)
-				document.getElementById('history').value = '';
-		}
-		else
-		{
-			mg.crear(rows, cols);
-			document.getElementById('subhead').innerHTML = mg.correctMessage;
-			//limpiar si tenia un mensaje de error
-			if(document.getElementById('history').value == mg.noValidMessage)
-				document.getElementById('history').value = '';
-		}
+		mg.crear(rows, cols);
+		document.getElementById('history').value = mg.correctMessage;
 	}
 }
 
@@ -436,14 +458,4 @@ function tryLoadMaze(file)
 	{
 		console.log("no valido");
 	}
-}
-
-function tryHighlight()
-{
-	dropzone.style('background-color', '#222');
-}
-
-function untryHighlight()
-{
-	dropzone.style('background-color', 'transparent');
 }
