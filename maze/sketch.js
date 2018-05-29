@@ -7,8 +7,10 @@
 ===================================================*/
 let rWalker; // walker de menu [Objeto]
 let mg; //maze generator [Objeto]
+let md; //maze draw [Objeto]
 var anchoMaze, altoMaze; //dimesiones dinamicas del canvas
 var stage, stageTemp; //status actual, hay que limpiar
+var currentMaze = [];
 //botones
 let generateBtn, exportMazeBtn, loadMazeBtn, dropzone, photoBtn;
 
@@ -332,6 +334,53 @@ class Cuadro
 	}
 }
 
+class MazeDraw
+{
+	constructor()
+	{
+		this.rowsDraw = 0;
+		this.colsDraw = 0;
+		this.anchoCuadrito = 0;
+		this.altoCuadrito = 0;
+		this.posX = 0;
+		this.posY = 0;
+	}
+
+	setRows(r)
+	{
+		this.rowsDraw = r;
+	}
+
+	setCols(c)
+	{
+		this.colsDraw = c;
+	}
+
+	drawMaze(mazeToDraw)
+	{
+		rectMode(CORNER);
+		strokeWeight(1);
+		this.anchoCuadrito = anchoMaze / this.colsDraw;
+		this.altoCuadrito = altoMaze / this.rowsDraw;
+		this.posX = 0;
+		this.posY = 0;
+
+		for(var i = 0; i < this.rowsDraw; i++)
+		{
+			for(var j = 0; j < this.colsDraw; j++)
+			{
+				(mazeToDraw[i * this.colsDraw + j]) ? fill("#000000") : fill("#ffffff")
+
+				rect(this.posX, this.posY, this.anchoCuadrito, this.altoCuadrito);
+				this.posX += this.anchoCuadrito;
+			}
+			
+			this.posY += this.altoCuadrito;
+			this.posX = 0;
+		}
+	}
+}
+
 /*
 |========================|
 |=========canvas=========|
@@ -341,7 +390,6 @@ class Cuadro
 function setup()
 {
 	calcularMaze(); // tamaño responsive
-	rectMode(CENTER); // los reactangulos se dibujen desde el centro
 
 	//para posicionarlo desde el dom
 	var myCanvas = createCanvas(anchoMaze, altoMaze);
@@ -352,6 +400,9 @@ function setup()
 
 	//iniciar el generador
 	mg = new MazeGenerator();
+
+	//iniciar el dibujador
+	md = new MazeDraw();
 
 	//status, empieza en el menu
 	stage = 0;
@@ -365,11 +416,11 @@ function setup()
 	exportMazeBtn = select("#mazeExport");
 	exportMazeBtn.mouseClicked(tryExportMaze);
 
-	loadMazeBtn = createFileInput(tryLoadMaze);
+	loadMazeBtn = createFileInput(tryLoadMazeFromFile);
 	loadMazeBtn.parent("loadMaze");
 
 	dropzone = select("#dropzone");
-	dropzone.drop(tryLoadMaze);
+	dropzone.drop(tryLoadMazeFromFile);
 
 	photoBtn = select("#photo")
 	photoBtn.mousePressed(function (){
@@ -379,12 +430,19 @@ function setup()
 
 function draw()
 {
-	if(stage != stageTemp){changingStage(); print("cambio");}
-
 	if(stage == 0)
 	{	
 		rWalker.show();
 		rWalker.step();
+	}
+	else if(stage == 1)
+	{
+		md.drawMaze(currentMaze);
+		stage = 2;
+	}
+	else if(stage == 2)
+	{
+		//
 	}
 }
 
@@ -408,6 +466,7 @@ function calcularMaze()
 
 function changingStage()
 {
+	rectMode(CENTER); // los reactangulos se dibujen desde el centro
 	background(255);
 	//rectángulo de area principal
 	stroke(0);//color
@@ -443,19 +502,38 @@ function tryExportMaze()
 	if(mg.isGenerado())
 	{
 		mg.exportar();
-		document.getElementById('subhead').innerHTML = "Exportado correctamente";
+		document.getElementById('history').value = "Exportado correctamente";
 	}
-	else document.getElementById('subhead').innerHTML = mg.noExport;
+	else document.getElementById('history').value = mg.noExport;
 }
 
-function tryLoadMaze(file)
+function tryLoadMazeFromFile(file)
 {
+
 	if(file.type == "text")
 	{
-		console.log(file.data);
+
+		var matrizLeida = file.data.split("\n");
+		md.setRows(matrizLeida[0].split(" ")[0]);
+		md.setCols(matrizLeida[0].split(" ")[1]);
+		var matrizTempCols;
+
+		for(var i = 0; i < md.rowsDraw; i++)
+		{
+			matrizTempCols = matrizLeida[i+1].split("");
+			for(var j = 0; j < md.colsDraw; j++)
+			{
+				currentMaze.push((matrizTempCols[j] == "1") ? true : false);
+			}
+		}
+
+		stage = 1;
+		changingStage();
+
 	}
 	else
 	{
-		console.log("no valido");
+		document.getElementById('history').value = "Archivo no válido"
 	}
+
 }
