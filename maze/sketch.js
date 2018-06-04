@@ -9,7 +9,9 @@ let rWalker; // walker de menu [Objeto]
 let mg; //maze generator [Objeto]
 let md; //maze draw [Objeto]
 var anchoMaze, altoMaze; //dimesiones dinamicas del canvas
-var stage, stageTemp; //status actual, hay que limpiar
+var stage; //status actual
+// stage = 0 -> Menu
+// stage = 1
 var currentMaze = [];
 //botones
 let generateBtn, exportMazeBtn, loadMazeBtn, dropzone, photoBtn;
@@ -90,10 +92,14 @@ class MazeGenerator
 		return this.generado;
 	}
 
-	exportar()
+	exportar(send)
 	{
+		var writer;
+
+		//si el argumento esta vacio entonces debe imprimirlo
+		(send == undefined) ? writer = createWriter('currentMaze.txt') : writer = ""
+
 		//[top, rigth, bottom, left];
-		var writer = createWriter('currentMaze.txt');
 		var cadena = "";
 		var toPrintCols, toPrintRows;
 
@@ -103,7 +109,7 @@ class MazeGenerator
 		if(this.realCols % 2 == 0) toPrintCols = this.colsGen * 2;
 		else toPrintCols = (this.colsGen * 2) - 1;
 
-		writer.print(toPrintRows +" "+ toPrintCols);
+		(send == undefined) ? writer.print(toPrintRows +" "+ toPrintCols) : writer += toPrintRows +" "+ toPrintCols + "\n"
 
 		for (var i = 0; i < this.rowsGen; i++)
 		{
@@ -142,7 +148,10 @@ class MazeGenerator
 				}
 			}
 
-			if(i != 0 || this.realRows % 2 == 0) writer.print(cadena);
+			if(i != 0 || this.realRows % 2 == 0)
+			{
+				(send == undefined) ? writer.print(cadena) : writer += cadena + "\n"
+			}
 			
 			//derechas
 			cadena = "";
@@ -151,10 +160,12 @@ class MazeGenerator
 				if(j != this.colsGen-1) (this.cuadritosAll[i*this.colsGen+j].walls[1]) ? cadena+="01" : cadena+="00"
 				else (this.realCols % 2 == 0) ? cadena += "00" : cadena += "0"
 			}
-			writer.print(cadena);
+
+			(send == undefined) ? writer.print(cadena) : writer += cadena + "\n"
 		}
 
-		writer.close();
+		if (send == undefined) writer.close();
+		else return writer;
 	}
 
 	crear(r, c)
@@ -416,11 +427,11 @@ function setup()
 	exportMazeBtn = select("#mazeExport");
 	exportMazeBtn.mouseClicked(tryExportMaze);
 
-	loadMazeBtn = createFileInput(tryLoadMazeFromFile);
+	loadMazeBtn = createFileInput(tryLoadMaze);
 	loadMazeBtn.parent("loadMaze");
 
 	dropzone = select("#dropzone");
-	dropzone.drop(tryLoadMazeFromFile);
+	dropzone.drop(tryLoadMaze);
 
 	photoBtn = select("#photo")
 	photoBtn.mousePressed(function (){
@@ -430,19 +441,21 @@ function setup()
 
 function draw()
 {
-	if(stage == 0)
+	if(stage == 0) // menu
 	{	
 		rWalker.show();
 		rWalker.step();
 	}
 	else if(stage == 1)
 	{
+		//ya se vacia y se llena la matriz cuando se lee al archivo
+		changingStage();
 		md.drawMaze(currentMaze);
 		stage = 2;
 	}
-	else if(stage == 2)
+	else if(stage == 2) // do not repeat draw
 	{
-		//
+		//noLoop();
 	}
 }
 
@@ -494,6 +507,10 @@ function tryGenerar()
 	{
 		mg.crear(rows, cols);
 		document.getElementById('history').value = mg.correctMessage;
+
+		//se muestre lo que acabamos de generar
+		tryLoadMaze(mg.exportar(false), true); //regrese un arreglo
+
 	}
 }
 
@@ -501,19 +518,20 @@ function tryExportMaze()
 {
 	if(mg.isGenerado())
 	{
-		mg.exportar();
+		mg.exportar(); // no regresa nada manda el txt del maze
 		document.getElementById('history').value = "Exportado correctamente";
 	}
 	else document.getElementById('history').value = mg.noExport;
 }
 
-function tryLoadMazeFromFile(file)
+function tryLoadMaze(file, create)
 {
-
-	if(file.type == "text")
+	if(file.type == "text" || create !== undefined)
 	{
+		currentMaze = []; // vaciarlo por si tenia algo
 
-		var matrizLeida = file.data.split("\n");
+		var matrizLeida;
+		(create == undefined) ? matrizLeida = file.data.split("\n") : matrizLeida = file.split("\n")
 		md.setRows(matrizLeida[0].split(" ")[0]);
 		md.setCols(matrizLeida[0].split(" ")[1]);
 		var matrizTempCols;
@@ -528,12 +546,10 @@ function tryLoadMazeFromFile(file)
 		}
 
 		stage = 1;
-		changingStage();
 
 	}
 	else
 	{
 		document.getElementById('history').value = "Archivo no válido"
 	}
-
 }
