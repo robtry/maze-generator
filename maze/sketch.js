@@ -119,7 +119,7 @@ class MazeGenerator
 			{
 				if(i == 0 && this.realRows % 2 == 0)
 				{
-					//son tops ver si el de la derecha
+					//son tops ver si el de la derecha solo entra cuando sea par
 					(this.cuadritosAll[i*this.colsGen+j].walls[1]) ? cadena += "01" : cadena += "11"
 				}
 				else
@@ -133,11 +133,10 @@ class MazeGenerator
 					else
 					{
 						//es la última columna
-						if(this.realCols % 2)
-							(this.cuadritosAll[i*this.colsGen+(j-1)].walls[0]) ? cadena += "01" : cadena += "00"
+						if(this.realCols % 2 == 0)
+							(this.cuadritosAll[i*this.colsGen+(j-1)].walls[1]) ? cadena += "01" : cadena += "00"
 						else
 							(this.cuadritosAll[i*this.colsGen+j].walls[0]) ? cadena += "1" : cadena += "0"
-
 					}
 				}
 			}
@@ -155,10 +154,11 @@ class MazeGenerator
 				else
 				{
 					//es la última columna
-					if(this.realCols % 2)
-						(this.cuadritosAll[i*this.colsGen+(j-1)].walls[0]) ? cadena += "01" : cadena += "00"
+					//(this.realCols % 2 == 0) ? cadena += "00" : cadena += "0"
+					if(this.realCols % 2 == 0)
+						(this.cuadritosAll[i*this.colsGen+(j-1)].walls[1]) ? cadena += "01" : cadena += "00"
 					else
-						(this.cuadritosAll[i*this.colsGen+j].walls[0]) ? cadena += "1" : cadena += "0"
+						cadena += "0"
 				}
 			}
 
