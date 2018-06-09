@@ -2,7 +2,7 @@
 #>= Maze Simulator
 #>= Author: Roberto Gervacio ~~ Mx ~~
 #>= Start Data: 11-03-18
-#>= Last Update: 01-06-18
+#>= Last Update: 04-06-18
 #>= Aditional Comments: using p5.js
 ===================================================*/
 let rWalker; // walker de menu [Objeto]
@@ -11,7 +11,7 @@ let md; //maze draw [Objeto]
 var anchoMaze, altoMaze; //dimesiones dinamicas del canvas
 var stage; //status actual
 // stage = 0 -> Menu
-// stage = 1
+// stage = 1 -> Maze
 var currentMaze = [];
 //botones
 let generateBtn, exportMazeBtn, loadMazeBtn, dropzone, photoBtn;
@@ -117,33 +117,27 @@ class MazeGenerator
 			cadena = "";
 			for(var j = 0; j < this.colsGen; j++)
 			{
-				if(i == 0)
+				if(i == 0 && this.realRows % 2 == 0)
 				{
-					if(this.realRows % 2 == 0)
-					{
-						//es la de arriba todos serian true
-						if(j != this.colsGen-1)
-						{
-							(this.cuadritosAll[i*this.colsGen+j].walls[1]) ? cadena += "01" : cadena += "11"
-						}
-						else (this.realCols % 2  == 0) ? cadena += "00" : cadena += "0"
-			
-					}
+					//son tops ver si el de la derecha
+					(this.cuadritosAll[i*this.colsGen+j].walls[1]) ? cadena += "01" : cadena += "11"
 				}
 				else
 				{
 					if(j != this.colsGen-1)
 					{
-						if (this.cuadritosAll[i*this.colsGen+j].walls[0]) cadena+="11"
+						if (this.cuadritosAll[i*this.colsGen+j].walls[0]) cadena += "11"
 						else (this.cuadritosAll[(i-1)*this.colsGen+j].walls[1] || this.cuadritosAll[i*this.colsGen+j].walls[1]) ? cadena+="01" : cadena+= "00"
 
 					}
 					else
 					{
-						if(this.cuadritosAll[i*this.colsGen+j].walls[0])
-							(this.realCols % 2  == 0) ? cadena += "11" : cadena += "1"
+						//es la última columna
+						if(this.realCols % 2)
+							(this.cuadritosAll[i*this.colsGen+(j-1)].walls[0]) ? cadena += "01" : cadena += "00"
 						else
-							(this.realCols % 2  == 0) ? cadena += "00" : cadena += "0";
+							(this.cuadritosAll[i*this.colsGen+j].walls[0]) ? cadena += "1" : cadena += "0"
+
 					}
 				}
 			}
@@ -158,7 +152,14 @@ class MazeGenerator
 			for(var j = 0; j < this.colsGen; j++)
 			{
 				if(j != this.colsGen-1) (this.cuadritosAll[i*this.colsGen+j].walls[1]) ? cadena+="01" : cadena+="00"
-				else (this.realCols % 2 == 0) ? cadena += "00" : cadena += "0"
+				else
+				{
+					//es la última columna
+					if(this.realCols % 2)
+						(this.cuadritosAll[i*this.colsGen+(j-1)].walls[0]) ? cadena += "01" : cadena += "00"
+					else
+						(this.cuadritosAll[i*this.colsGen+j].walls[0]) ? cadena += "1" : cadena += "0"
+				}
 			}
 
 			(send == undefined) ? writer.print(cadena) : writer += cadena + "\n"
@@ -465,6 +466,7 @@ function windowResized()
 	resizeCanvas(anchoMaze, altoMaze);
 }
 
+
 /*
 |========================|
 |==funciones del canvas==|
@@ -518,7 +520,7 @@ function tryExportMaze()
 {
 	if(mg.isGenerado())
 	{
-		mg.exportar(); // no regresa nada manda el txt del maze
+		mg.exportar(); // no regresa nada manda a descargar el txt del maze
 		document.getElementById('history').value = "Exportado correctamente";
 	}
 	else document.getElementById('history').value = mg.noExport;
