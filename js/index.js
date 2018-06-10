@@ -64,7 +64,6 @@ $('#posCheck').change(function(){
 
 $('#sizeCheck').change(function(){
 	(this.checked) ? toggleSizeMaze(true) : toggleSizeMaze(false)
-	$("#consoleBtn").toggleClass("pure-button-disabled");
 });
 
 $('#dropzone').on('dragenter', function() {

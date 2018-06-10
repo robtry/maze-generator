@@ -576,7 +576,7 @@ function tryChangeSize()
 	if(newAlto <= 100 || newAncho <= 100 || isNaN(newAlto) || isNaN(newAncho))
 	{
 		//no válidas
-		document.getElementById('history').value = mg.noValid + "\n\n" + mg.noToResponsive;
+		document.getElementById('history').value = mg.noValid + "\n\n" + mg.noToResponsive +"\nY ambos deben ser específicados";
 	}
 	else
 	{

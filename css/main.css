@@ -37,7 +37,7 @@ a:focus {
 }
 
 input{
-	width: 30%; //los normlaes
+	width: 30%; /* los normlaes */
 }
 
 .nav-item {
@@ -114,7 +114,7 @@ textarea{
 }
 
 #loadMaze > input{
-	width: 65%; //choosen file
+	width: 65%; /* choosen file */
 }
 
 #consola {
@@ -124,8 +124,8 @@ textarea{
 	height: 100%;
 	background-color: red;
 	right: 0;
-	z-index: -1;
-	width: 150px; //cambiar la generacion del maze too
+	z-index: 0;
+	width: 150px; /* cambiar la generacion del maze too */
 }
 
 #history{
