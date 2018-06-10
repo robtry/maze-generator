@@ -8,6 +8,7 @@
 let rWalker; // walker de menu [Objeto]
 let mg; //maze generator [Objeto]
 let md; //maze draw [Objeto]
+let mc; // maze controller [Objeto]
 var anchoMaze, altoMaze; //dimesiones dinamicas del canvas
 var stage; //status actual
 // stage = 0 -> Menu
@@ -416,6 +417,14 @@ class MazeDraw
 	}
 }
 
+class MazeController
+{
+	constructor()
+	{
+		this.currentPoint;
+	}
+}
+
 /*
 |========================|
 |=========canvas=========|
@@ -438,6 +447,9 @@ function setup()
 
 	//iniciar el dibujador
 	md = new MazeDraw();
+
+	//iniciar el controlador
+	mc = new MazeController();
 
 	//status, empieza en el menu
 	stage = 0;
@@ -503,6 +515,8 @@ function windowResized()
 		resizeCanvas(anchoMaze, altoMaze);
 		changingStage();
 	}
+
+	if(stage == 2) tryReloadMaze();
 }
 
 
