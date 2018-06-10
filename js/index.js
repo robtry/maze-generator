@@ -1,6 +1,6 @@
 $( document ).ready(function() {
 	tamanios();
-	$("#panel-settings").fadeOut(1);
+	//$("#panel-settings").fadeOut(1);
 	togglePositionMaze(true);
 	toggleSizeMaze(true);
 	$('#sizeCheck').prop('checked', true);
@@ -64,6 +64,7 @@ $('#posCheck').change(function(){
 
 $('#sizeCheck').change(function(){
 	(this.checked) ? toggleSizeMaze(true) : toggleSizeMaze(false)
+	$("#consoleBtn").toggleClass("pure-button-disabled");
 });
 
 $('#dropzone').on('dragenter', function() {
