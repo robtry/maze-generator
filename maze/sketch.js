@@ -13,8 +13,9 @@ var stage; //status actual
 // stage = 0 -> Menu
 // stage = 1 -> Maze
 var currentMaze = [];
+var responsiveSize; // boolean saber de que tamaño hay que dibujar el maze
 //botones
-let generateBtn, exportMazeBtn, loadMazeBtn, dropzone, photoBtn;
+let generateBtn, exportMazeBtn, loadMazeBtn, dropzone, photoBtn, sizeCheckBtn, changeSizeBtn;
 
 /*
 |========================|
@@ -75,6 +76,7 @@ class MazeGenerator
 		this.onlyOdd = "Los valores deben ser números impares";
 		this.noExport = "No hay nada para exportar";
 		this.correctMessage = "Creado correctamente";
+		this.noToResponsive = "Los valores para las dimensiones del laberinto deben ser enteros positivos mayores a 100";
 		this.realRows = 0;
 		this.realCols = 0;
 		//los del algoritmo
@@ -408,7 +410,7 @@ function setup()
 	myCanvas.parent('myContainer');
 
 	//inciar el random walker
-	rWalker = new RandomWalker(anchoMaze/2, altoMaze/2, random(15) + 8);
+	rWalker = new RandomWalker(anchoMaze/2, altoMaze/2, random(16) + 8);
 
 	//iniciar el generador
 	mg = new MazeGenerator();
@@ -420,6 +422,9 @@ function setup()
 	stage = 0;
 	stageTemp = stage;
 	changingStage();
+
+	//medida responsive del maze
+	responsiveSize = true;
 
 	//botones
 	generateBtn = select("#generar");
@@ -434,10 +439,14 @@ function setup()
 	dropzone = select("#dropzone");
 	dropzone.drop(tryLoadMaze);
 
-	photoBtn = select("#photo")
-	photoBtn.mousePressed(function (){
-		save('my.png');
-	});
+	photoBtn = select("#photo");
+	photoBtn.mousePressed(function (){save('my.png');});
+
+	sizeCheckBtn = select("#sizeCheck");
+	sizeCheckBtn.changed(function (){responsiveSize = !responsiveSize; windowResized();});
+
+	changeSizeBtn = select("#sizeBtn");
+	changeSizeBtn.mouseClicked(tryChangeSize);
 }
 
 function draw()
@@ -462,8 +471,11 @@ function draw()
 
 function windowResized()
 {
-	calcularMaze();
-	resizeCanvas(anchoMaze, altoMaze);
+	if(responsiveSize)
+	{
+		calcularMaze();
+		resizeCanvas(anchoMaze, altoMaze);
+	}
 }
 
 
@@ -553,5 +565,24 @@ function tryLoadMaze(file, create)
 	else
 	{
 		document.getElementById('history').value = "Archivo no válido"
+	}
+}
+
+function tryChangeSize()
+{
+	var newAlto = parseInt(document.getElementById('largoM').value);
+	var newAncho = parseInt(document.getElementById('altoM').value);
+
+	if(newAlto <= 100 || newAncho <= 100 || isNaN(newAlto) || isNaN(newAncho))
+	{
+		//no válidas
+		document.getElementById('history').value = mg.noValid + "\n\n" + mg.noToResponsive;
+	}
+	else
+	{
+		//son validos
+		altoMaze = newAlto;
+		anchoMaze = newAncho;
+		resizeCanvas(anchoMaze, altoMaze);
 	}
 }

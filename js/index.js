@@ -1,6 +1,6 @@
 $( document ).ready(function() {
 	tamanios();
-	//$("#panel-settings").fadeOut(1);
+	$("#panel-settings").fadeOut(1);
 	togglePositionMaze(true);
 	toggleSizeMaze(true);
 	$('#sizeCheck').prop('checked', true);
@@ -12,23 +12,26 @@ window.onresize = function(event) {
 	tamanios();
 };
 
+//separador de los controles en el panel
 function tamanios()
 {
 	$("#history").css("height", innerHeight + "px");
 	if(innerHeight <= 606)
 		$(".separador").css("margin-top", innerHeight * (1/50) + "px");
 	else
-		$(".separador").css("margin-top", innerHeight * (1/20) + "px");
+		$(".separador").css("margin-top", innerHeight * (1/35) + "px");
 }
 
+//habilitrar y deshabilitar controles para cambiar tamaño
 function toggleSizeMaze(status) {
 	$('#largoM').prop('disabled', status);
-	$('#anchoM').prop('disabled', status);
+	$('#altoM').prop('disabled', status);
 	$('#sizeBtn').prop('disabled', status);
 	$('#largoM').val('');
-	$('#anchoM').val('');
+	$('#altoM').val('');
 }
 
+//habilitar y deshabilitar controles para escribir una poscisión
 function togglePositionMaze(status) {
 	$("#inicioC").val('');
 	$("#finC").val('');
@@ -37,10 +40,12 @@ function togglePositionMaze(status) {
 	$('#posBtn').prop('disabled', status);
 }
 
-var escondidoSetting = true;
 $("#ajustesBtn").click(function() {
-	(escondidoSetting) ? $("#panel-settings").slideDown("medium") : $("#panel-settings").slideUp("medium")
-	escondidoSetting = !escondidoSetting
+	$("#panel-settings").slideDown("medium");
+});
+
+$("#subir").click(function () {
+	 $("#panel-settings").slideUp("medium");
 });
 
 var escondidoConsole = false
