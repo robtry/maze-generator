@@ -15,7 +15,7 @@ var stage; //status actual
 var currentMaze = [];
 var responsiveSize; // boolean saber de que tamaño hay que dibujar el maze
 //botones
-let generateBtn, exportMazeBtn, loadMazeBtn, dropzone, photoBtn, sizeCheckBtn, changeSizeBtn;
+let generateBtn, exportMazeBtn, loadMazeBtn, dropzone, photoBtn, sizeCheckBtn, changeSizeBtn, restartBtn;
 
 /*
 |========================|
@@ -75,6 +75,7 @@ class MazeGenerator
 		this.noValidMessage = "Los valores para generar el laberinto, deben ser enteros positivos";
 		this.onlyOdd = "Los valores deben ser números impares";
 		this.noExport = "No hay nada para exportar";
+		this.noReload = "No hay nada para recargar";
 		this.correctMessage = "Creado correctamente";
 		this.noToResponsive = "Los valores para las dimensiones del laberinto deben ser enteros positivos mayores a 100";
 		this.realRows = 0;
@@ -352,6 +353,7 @@ class MazeDraw
 {
 	constructor()
 	{
+		this.importado = false;
 		this.rowsDraw = 0;
 		this.colsDraw = 0;
 		this.anchoCuadrito = 0;
@@ -370,6 +372,16 @@ class MazeDraw
 	setCols(c)
 	{
 		this.colsDraw = c;
+	}
+
+	setImportado()
+	{
+		this.importado = true;
+	}
+
+	isImportado()
+	{
+		return this.importado;
 	}
 
 	drawMaze(mazeToDraw)
@@ -456,6 +468,9 @@ function setup()
 
 	changeSizeBtn = select("#sizeBtn");
 	changeSizeBtn.mouseClicked(tryChangeSize);
+
+	restartBtn = select("#reiniciar");
+	restartBtn.mouseClicked(tryReloadMaze);
 
 	//los números
 	textStyle(NORMAL);
@@ -550,14 +565,25 @@ function tryExportMaze()
 	else document.getElementById('history').value = mg.noExport;
 }
 
-function tryLoadMaze(file, create)
+function tryLoadMaze(file, creadoAqui)
 {
-	if(file.type == "text" || create !== undefined)
+	if(file.type == "text" || creadoAqui !== undefined)
 	{
 		currentMaze = []; // vaciarlo por si tenia algo
 
 		var matrizLeida;
-		(create == undefined) ? matrizLeida = file.data.split("\n") : matrizLeida = file.split("\n")
+		if(creadoAqui == undefined)
+		{
+			//es importado
+			 matrizLeida = file.data.split("\n");
+			 md.setImportado();
+		}
+		else
+		{
+			//generado aqui
+			matrizLeida = file.split("\n")
+		} 
+
 		md.setRows(matrizLeida[0].split(" ")[0]);
 		md.setCols(matrizLeida[0].split(" ")[1]);
 		var matrizTempCols;
@@ -597,4 +623,9 @@ function tryChangeSize()
 		anchoMaze = newAncho;
 		resizeCanvas(anchoMaze, altoMaze);
 	}
+}
+
+function tryReloadMaze()
+{
+	(mg.isGenerado() || md.isImportado()) ?	stage = 1 : document.getElementById('history').value = mg.noReload;
 }
