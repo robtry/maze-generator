@@ -2,7 +2,7 @@
 #>= Maze Simulator
 #>= Author: Roberto Gervacio ~~ Mx ~~
 #>= Start Data: 11-03-18
-#>= Last Update: 04-06-18
+#>= Last Update: 09-06-18
 #>= Aditional Comments: using p5.js
 ===================================================*/
 let rWalker; // walker de menu [Objeto]
@@ -374,18 +374,32 @@ class MazeDraw
 	{
 		rectMode(CORNER);
 		strokeWeight(1);
-		this.anchoCuadrito = anchoMaze / this.colsDraw;
-		this.altoCuadrito = altoMaze / this.rowsDraw;
+		this.anchoCuadrito = (anchoMaze - 30) / this.colsDraw;
+		this.altoCuadrito = (altoMaze - 30) / this.rowsDraw;
 		this.posX = 0;
 		this.posY = 0;
+		textSize(7); //hacer esto responsive
 
 		for(var i = 0; i < this.rowsDraw; i++)
 		{
+					
 			for(var j = 0; j < this.colsDraw; j++)
 			{
+				if(j == this.colsDraw - 1 || i == this.rowsDraw - 1)
+				{
+					noStroke();
+					fill(0);
+				}
+
+				if(j == this.colsDraw - 1) text(i, anchoMaze - 25, this.posY + (this.altoCuadrito/2) + (this.altoCuadrito/5));
+
+				if(i == this.rowsDraw - 1) text(j,this.posX + this.anchoCuadrito/2, altoMaze - 10);
+
+				stroke(0);
 				(mazeToDraw[i * this.colsDraw + j]) ? fill("#000000") : fill("#ffffff")
 
 				rect(this.posX, this.posY, this.anchoCuadrito, this.altoCuadrito);
+
 				this.posX += this.anchoCuadrito;
 			}
 			
@@ -447,6 +461,9 @@ function setup()
 
 	changeSizeBtn = select("#sizeBtn");
 	changeSizeBtn.mouseClicked(tryChangeSize);
+
+	//los números
+	textStyle(NORMAL);
 }
 
 function draw()
@@ -458,8 +475,7 @@ function draw()
 	}
 	else if(stage == 1)
 	{
-		//ya se vacia y se llena la matriz cuando se lee al archivo
-		changingStage();
+		background(255); // limpiar
 		md.drawMaze(currentMaze);
 		stage = 2;
 	}
@@ -475,6 +491,7 @@ function windowResized()
 	{
 		calcularMaze();
 		resizeCanvas(anchoMaze, altoMaze);
+		changingStage();
 	}
 }
 
@@ -487,8 +504,8 @@ function windowResized()
 
 function calcularMaze()
 {
-	anchoMaze = innerWidth * (9.5/10) - 140;
-	altoMaze = innerHeight * (8.9/10);
+	anchoMaze = innerWidth * (9.4/10) - 140; //ancho de la consola
+	altoMaze = innerHeight * (8.7/10);
 }
 
 function changingStage()
@@ -503,7 +520,7 @@ function changingStage()
 
 /*
 |============================|
-|==funciones para controles==|
+|===funciones para botones===|
 |============================|
 */
 
