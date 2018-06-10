@@ -2,7 +2,7 @@
 #>= Maze Simulator
 #>= Author: Roberto Gervacio ~~ Mx ~~
 #>= Start Data: 11-03-18
-#>= Last Update: 09-06-18
+#>= Last Update: 10-06-18
 #>= Aditional Comments: using p5.js
 ===================================================*/
 let rWalker; // walker de menu [Objeto]
@@ -358,6 +358,8 @@ class MazeDraw
 		this.altoCuadrito = 0;
 		this.posX = 0;
 		this.posY = 0;
+		this.responsiveTextX = 0;
+		this.responsiveTextY = 0;
 	}
 
 	setRows(r)
@@ -373,36 +375,29 @@ class MazeDraw
 	drawMaze(mazeToDraw)
 	{
 		rectMode(CORNER);
-		strokeWeight(1);
+		strokeWeight(1); // contorno de los cuadritos
 		this.anchoCuadrito = (anchoMaze - 30) / this.colsDraw;
 		this.altoCuadrito = (altoMaze - 30) / this.rowsDraw;
 		this.posX = 0;
 		this.posY = 0;
-		textSize(7); //hacer esto responsive
+		this.responsiveTextX  = this.anchoCuadrito/3;
+		this.responsiveTextY = this.altoCuadrito/2;
 
 		for(var i = 0; i < this.rowsDraw; i++)
-		{
-					
+		{		
 			for(var j = 0; j < this.colsDraw; j++)
 			{
-				if(j == this.colsDraw - 1 || i == this.rowsDraw - 1)
-				{
-					noStroke();
-					fill(0);
-				}
-
-				if(j == this.colsDraw - 1) text(i, anchoMaze - 25, this.posY + (this.altoCuadrito/2) + (this.altoCuadrito/5));
-
-				if(i == this.rowsDraw - 1) text(j,this.posX + this.anchoCuadrito/2, altoMaze - 10);
+				if(j == this.colsDraw - 1 || i == this.rowsDraw - 1){noStroke();fill(0);}
+				if(j == this.colsDraw - 1){textSize(this.responsiveTextY); text(i, anchoMaze - 25, this.posY + (this.altoCuadrito/2) + (this.altoCuadrito/5));}
+				if(i == this.rowsDraw - 1){textSize(this.responsiveTextX); text(j,this.posX + this.anchoCuadrito/2, altoMaze - 10);}
 
 				stroke(0);
 				(mazeToDraw[i * this.colsDraw + j]) ? fill("#000000") : fill("#ffffff")
-
 				rect(this.posX, this.posY, this.anchoCuadrito, this.altoCuadrito);
 
 				this.posX += this.anchoCuadrito;
 			}
-			
+
 			this.posY += this.altoCuadrito;
 			this.posX = 0;
 		}
@@ -504,8 +499,8 @@ function windowResized()
 
 function calcularMaze()
 {
-	anchoMaze = innerWidth * (9.4/10) - 140; //ancho de la consola
-	altoMaze = innerHeight * (8.7/10);
+	anchoMaze = innerWidth * (9.5/10) - 140; //ancho de la consola
+	altoMaze = innerHeight * (8.8/10);
 }
 
 function changingStage()
