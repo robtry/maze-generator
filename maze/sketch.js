@@ -2,7 +2,7 @@
 #>= Maze Simulator
 #>= Author: Roberto Gervacio ~~ Mx ~~
 #>= Start Data: 11-03-18
-#>= Last Update: 10-06-18
+#>= Last Update: 15-06-18
 #>= Aditional Comments: using p5.js
 ===================================================*/
 let rWalker; // walker de menu [Objeto]
@@ -15,8 +15,9 @@ var stage; //status actual
 // stage = 1 -> Maze
 var currentMaze = [];
 var responsiveSize; // boolean saber de que tamaño hay que dibujar el maze
+var atmPos; //boolean para saber que donde poner las posiciones
 //botones
-let generateBtn, exportMazeBtn, loadMazeBtn, dropzone, photoBtn, sizeCheckBtn, changeSizeBtn, restartBtn;
+let generateBtn, exportMazeBtn, loadMazeBtn, dropzone, photoBtn, sizeCheckBtn, changeSizeBtn, restartBtn, posCheckBtn, setPosBtn;
 
 /*
 |========================|
@@ -363,6 +364,9 @@ class MazeDraw
 		this.posY = 0;
 		this.responsiveTextX = 0;
 		this.responsiveTextY = 0;
+		
+		this.currentPosition;
+		this.finalPos;
 	}
 
 	setRows(r)
@@ -383,6 +387,24 @@ class MazeDraw
 	isImportado()
 	{
 		return this.importado;
+	}
+
+	chooseInitialPosition()
+	{
+		this.currentPosition = createVector(this.rowsDraw - 1, 0);
+		console.log(this.currentPosition)
+	}
+
+	chooseFinalPosition(matriz)
+	{
+		//cambiar la probabilidad
+		var valido = false;
+		while(!valido)
+		{
+			this.finalPos = createVector(Math.floor(random(this.rowsDraw-1)), Math.floor(random(this.colsDraw-1)));
+			(matriz[this.finalPos.x * this.colsDraw + this.finalPos.y])? valido = false : valido = true
+		}
+		console.log(this.finalPos);
 	}
 
 	drawMaze(mazeToDraw)
@@ -421,7 +443,12 @@ class MazeController
 {
 	constructor()
 	{
-		this.currentPoint;
+		//
+	}
+
+	addPass()
+	{
+
 	}
 }
 
@@ -448,7 +475,7 @@ function setup()
 	//iniciar el dibujador
 	md = new MazeDraw();
 
-	//iniciar el controlador
+	//iniciar el controlador de leer los datos
 	mc = new MazeController();
 
 	//status, empieza en el menu
@@ -458,6 +485,9 @@ function setup()
 
 	//medida responsive del maze
 	responsiveSize = true;
+
+	//posiciones del maze
+	atmPos = true;
 
 	//botones
 	generateBtn = select("#generar");
@@ -481,6 +511,12 @@ function setup()
 	changeSizeBtn = select("#sizeBtn");
 	changeSizeBtn.mouseClicked(tryChangeSize);
 
+	posCheckBtn = select("#posCheck");
+	posCheckBtn.changed(function(){ atmPos = !atmPos });
+
+	setPosBtn = select("#posBtn");
+	setPosBtn.mousePressed(trySetPositions);
+
 	restartBtn = select("#reiniciar");
 	restartBtn.mouseClicked(tryReloadMaze);
 
@@ -498,6 +534,8 @@ function draw()
 	else if(stage == 1)
 	{
 		background(255); // limpiar
+		md.chooseInitialPosition();
+		md.chooseFinalPosition(currentMaze);
 		md.drawMaze(currentMaze);
 		stage = 2;
 	}
@@ -637,6 +675,14 @@ function tryChangeSize()
 		anchoMaze = newAncho;
 		resizeCanvas(anchoMaze, altoMaze);
 	}
+}
+
+function trySetPositions()
+{
+	var startPos = document.getElementById('inicioC').value;
+	var endPos = document.getElementById('finC').value;
+	console.log(startPos);
+	console.log(endPos);
 }
 
 function tryReloadMaze()

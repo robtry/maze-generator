@@ -38,6 +38,17 @@ function togglePositionMaze(status) {
 	$('#inicioC').prop('disabled', status);
 	$('#finC').prop('disabled', status);
 	$('#posBtn').prop('disabled', status);
+
+	if(status == true)
+	{
+		$("#inicioC").attr("placeholder", "start");
+		$('#finC').attr("placeholder", "end");
+	}
+	else
+	{
+		$("#inicioC").attr("placeholder", "00");
+		$('#finC').attr("placeholder", "ab");
+	}
 }
 
 $("#ajustesBtn").click(function() {
