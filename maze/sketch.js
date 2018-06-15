@@ -60,7 +60,7 @@ class RandomWalker
 
 		fill(0);
 		rect(this.x,this.y,this.r,this.r);
-		
+
 		fill(255);
 		rect(this.lastX,this.lastY,this.r,this.r);
 	}
@@ -150,7 +150,7 @@ class MazeGenerator
 			{
 				(send == undefined) ? writer.print(cadena) : writer += cadena + "\n"
 			}
-			
+
 			//derechas
 			cadena = "";
 			for(var j = 0; j < this.colsGen; j++)
@@ -197,7 +197,7 @@ class MazeGenerator
 		{
 			for(var j = 0; j < this.colsGen; j++)
 			{
-				this.cuadritosAll.push(new Cuadro(i,j)); // arreglo con todos los cuadritos			
+				this.cuadritosAll.push(new Cuadro(i,j)); // arreglo con todos los cuadritos
 			}
 		}
 
@@ -222,7 +222,7 @@ class MazeGenerator
 				this.currentCelda = this.nextCelda;
 				this.currentCelda.visited = true;
 			}
-		//2.2.- Else if stack is not empty 
+		//2.2.- Else if stack is not empty
 			else if(this.stack.length > 0)
 			{
 			//2.2.1.- Pop a cell from the stack
@@ -273,7 +273,7 @@ class Cuadro
 			//indexFila*numeroColums + indexColum
 			return i*c + j;
 			// la formula anterior regresa la posicion, como si fuera un arreglo bidemsional
-			//siendo unidimensional 
+			//siendo unidimensional
 		}
 	}
 
@@ -364,7 +364,7 @@ class MazeDraw
 		this.posY = 0;
 		this.responsiveTextX = 0;
 		this.responsiveTextY = 0;
-		
+
 		this.currentPosition;
 		this.inicialPos;
 		this.finalPos;
@@ -406,7 +406,17 @@ class MazeDraw
 			this.finalPos = createVector(Math.floor(random(this.colsDraw-1)), Math.floor(random(this.rowsDraw-1)));
 			(matriz[this.finalPos.y * this.colsDraw + this.finalPos.x])? valido = false : valido = true
 		}
-		console.log(this.finalPos);
+		//console.log(this.finalPos);
+	}
+
+	setInitialPos(x,y)
+	{
+		//
+	}
+
+	setFinalPos(x,y)
+	{
+		//
 	}
 
 	drawMaze(mazeToDraw)
@@ -421,7 +431,7 @@ class MazeDraw
 		this.responsiveTextY = this.altoCuadrito/2;
 
 		for(var i = 0; i < this.rowsDraw; i++)
-		{		
+		{
 			for(var j = 0; j < this.colsDraw; j++)
 			{
 				if(j == this.colsDraw - 1 || i == this.rowsDraw - 1){noStroke();fill(0);}
@@ -433,7 +443,7 @@ class MazeDraw
 				if (i == this.inicialPos.y && j == this.inicialPos.x) fill("#2980b9");
 				else if (i == this.finalPos.y && j == this.finalPos.x) fill("#e67e22");
 				else (mazeToDraw[i * this.colsDraw + j]) ? fill("#000000") : fill("#ffffff")
-				
+
 				rect(this.posX, this.posY, this.anchoCuadrito, this.altoCuadrito);
 
 				this.posX += this.anchoCuadrito;
@@ -533,15 +543,13 @@ function setup()
 function draw()
 {
 	if(stage == 0) // menu
-	{	
+	{
 		rWalker.show();
 		rWalker.step();
 	}
 	else if(stage == 1)
 	{
 		background(255); // limpiar
-		md.chooseInitialPosition();
-		md.chooseFinalPosition(currentMaze);
 		md.drawMaze(currentMaze);
 		stage = 2;
 	}
@@ -640,7 +648,7 @@ function tryLoadMaze(file, creadoAqui)
 		{
 			//generado aqui
 			matrizLeida = file.split("\n")
-		} 
+		}
 
 		md.setRows(matrizLeida[0].split(" ")[0]);
 		md.setCols(matrizLeida[0].split(" ")[1]);
@@ -654,6 +662,9 @@ function tryLoadMaze(file, creadoAqui)
 				currentMaze.push((matrizTempCols[j] == "1") ? true : false);
 			}
 		}
+
+		md.chooseInitialPosition();
+		md.chooseFinalPosition(currentMaze);
 
 		stage = 1;
 
@@ -685,10 +696,22 @@ function tryChangeSize()
 
 function trySetPositions()
 {
-	var startPos = document.getElementById('inicioC').value;
-	var endPos = document.getElementById('finC').value;
-	console.log(startPos);
-	console.log(endPos);
+	if(mg.isGenerado() || md.isImportado())
+	{
+		var xS, yS, xE, yE;
+		var startPos = document.getElementById('inicioC').value;
+		var endPos = document.getElementById('finC').value;
+		xS = startPos.split("");
+		//yS = startPos.split("")[1];
+		xE = endPos.split("")[0];
+		yE = endPos.split("")[1];
+		console.log(xS + "," + yS + " y " + xE + ", " + yE);
+
+	}
+	else
+	{
+		document.getElementById('history').value = "Debe haber un laberinto en el cavas";
+	}
 }
 
 function tryReloadMaze()

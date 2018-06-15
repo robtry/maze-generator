@@ -5,7 +5,7 @@ $( document ).ready(function() {
 	toggleSizeMaze(true);
 	$('#sizeCheck').prop('checked', true);
 	$('#posCheck').prop('checked', true);
-	
+
 });
 
 window.onresize = function(event) {
@@ -47,7 +47,7 @@ function togglePositionMaze(status) {
 	else
 	{
 		$("#inicioC").attr("placeholder", "00");
-		$('#finC').attr("placeholder", "ab");
+		$('#finC').attr("placeholder", "xy");
 	}
 }
 
@@ -62,7 +62,7 @@ $("#subir").click(function () {
 var escondidoConsole = false
 $("#consoleBtn").click(function() {
 	(escondidoConsole) ? $("#consola").slideDown("fast") : $("#consola").slideUp("fast")
-	escondidoConsole = !escondidoConsole;	
+	escondidoConsole = !escondidoConsole;
 });
 
 $("#clearConsole").click(function() {
