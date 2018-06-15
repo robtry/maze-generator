@@ -366,6 +366,7 @@ class MazeDraw
 		this.responsiveTextY = 0;
 		
 		this.currentPosition;
+		this.inicialPos;
 		this.finalPos;
 	}
 
@@ -391,8 +392,9 @@ class MazeDraw
 
 	chooseInitialPosition()
 	{
-		this.currentPosition = createVector(this.rowsDraw - 1, 0);
-		console.log(this.currentPosition)
+		this.inicialPos = createVector(0, this.rowsDraw - 1);
+		this.currentPosition = this.inicialPos;
+		//console.log(this.currentPosition)
 	}
 
 	chooseFinalPosition(matriz)
@@ -401,8 +403,8 @@ class MazeDraw
 		var valido = false;
 		while(!valido)
 		{
-			this.finalPos = createVector(Math.floor(random(this.rowsDraw-1)), Math.floor(random(this.colsDraw-1)));
-			(matriz[this.finalPos.x * this.colsDraw + this.finalPos.y])? valido = false : valido = true
+			this.finalPos = createVector(Math.floor(random(this.colsDraw-1)), Math.floor(random(this.rowsDraw-1)));
+			(matriz[this.finalPos.y * this.colsDraw + this.finalPos.x])? valido = false : valido = true
 		}
 		console.log(this.finalPos);
 	}
@@ -427,7 +429,11 @@ class MazeDraw
 				if(i == this.rowsDraw - 1){textSize(this.responsiveTextX); text(j,this.posX + this.anchoCuadrito/2, altoMaze - 10);}
 
 				stroke(0);
-				(mazeToDraw[i * this.colsDraw + j]) ? fill("#000000") : fill("#ffffff")
+				//condiciones para que dibuje las posiciones
+				if (i == this.inicialPos.y && j == this.inicialPos.x) fill("#2980b9");
+				else if (i == this.finalPos.y && j == this.finalPos.x) fill("#e67e22");
+				else (mazeToDraw[i * this.colsDraw + j]) ? fill("#000000") : fill("#ffffff")
+				
 				rect(this.posX, this.posY, this.anchoCuadrito, this.altoCuadrito);
 
 				this.posX += this.anchoCuadrito;
