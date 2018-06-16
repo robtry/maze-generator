@@ -46,8 +46,8 @@ function togglePositionMaze(status) {
 	}
 	else
 	{
-		$("#inicioC").attr("placeholder", "00");
-		$('#finC').attr("placeholder", "xy");
+		$("#inicioC").attr("placeholder", "0,0");
+		$('#finC').attr("placeholder", "x,y");
 	}
 }
 

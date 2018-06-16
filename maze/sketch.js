@@ -411,12 +411,12 @@ class MazeDraw
 
 	setInitialPos(x,y)
 	{
-		//
+		this.inicialPos = createVector(x, y);
 	}
 
 	setFinalPos(x,y)
 	{
-		//
+		this.finalPos = createVector(x, y);
 	}
 
 	drawMaze(mazeToDraw)
@@ -440,8 +440,8 @@ class MazeDraw
 
 				stroke(0);
 				//condiciones para que dibuje las posiciones
-				if (i == this.inicialPos.y && j == this.inicialPos.x) fill("#2980b9");
-				else if (i == this.finalPos.y && j == this.finalPos.x) fill("#e67e22");
+				if (i == this.inicialPos.y && j == this.inicialPos.x) fill("#2980b9"); //azul
+				else if (i == this.finalPos.y && j == this.finalPos.x) fill("#e67e22"); //naranja
 				else (mazeToDraw[i * this.colsDraw + j]) ? fill("#000000") : fill("#ffffff")
 
 				rect(this.posX, this.posY, this.anchoCuadrito, this.altoCuadrito);
@@ -659,7 +659,7 @@ function tryLoadMaze(file, creadoAqui)
 			matrizTempCols = matrizLeida[i+1].split("");
 			for(var j = 0; j < md.colsDraw; j++)
 			{
-				currentMaze.push((matrizTempCols[j] == "1") ? true : false);
+				currentMaze.push(matrizTempCols[j] == "1");
 			}
 		}
 
@@ -701,12 +701,50 @@ function trySetPositions()
 		var xS, yS, xE, yE;
 		var startPos = document.getElementById('inicioC').value;
 		var endPos = document.getElementById('finC').value;
-		xS = startPos.split("");
-		//yS = startPos.split("")[1];
-		xE = endPos.split("")[0];
-		yE = endPos.split("")[1];
-		console.log(xS + "," + yS + " y " + xE + ", " + yE);
 
+		if(startPos.includes(",") && endPos.includes(","))
+		{
+			xS = parseInt(startPos.split(",")[0]);
+			yS = parseInt(startPos.split(",")[1]);
+			xE = parseInt(endPos.split(",")[0]);
+			yE = parseInt(endPos.split(",")[1]);
+
+			if
+			(
+				xS < 0 || yS < 0 || isNaN(xS) || isNaN(yS) ||
+				xE < 0 || yE < 0 || isNaN(xE) || isNaN(yE) ||
+				xS > md.colsDraw - 1 || xE > md.colsDraw - 1 || //-1 porque empieza en 0
+				yS > md.rowsDraw - 1 || yE > md.rowsDraw - 1 || //-1 porque empieza en 0
+				(xS == xE && yS == yE)
+			)
+			{
+				//no válido
+				document.getElementById('history').value = "No son números válidos";
+			}
+			else
+			{
+				//números válidos dentro del maze y distintos a si
+				if(!(currentMaze[yS * md.colsDraw + xS]) && !(currentMaze[yE * md.colsDraw + xE]))
+				{
+					//estan disponibles
+					md.setInitialPos(xS,yS);
+					md.setFinalPos(xE,yE);
+					document.getElementById('history').value = "Nuevas posiciones establecidas";
+	
+					//para que se vuelva a dibujar
+					stage = 1;
+				}
+				else
+				{
+					document.getElementById('history').value = "No se puede establecer esta posición";
+				}
+			}
+		}
+		else
+		{
+			document.getElementById('history').value = "Hay un error con las cordenadas";
+		}
+	
 	}
 	else
 	{
