@@ -399,11 +399,10 @@ class MazeDraw
 
 	chooseFinalPosition(matriz)
 	{
-		//cambiar la probabilidad
 		var valido = false;
 		while(!valido)
 		{
-			this.finalPos = createVector(Math.floor(random(this.colsDraw-1)), Math.floor(random(this.rowsDraw-1)));
+			this.finalPos = createVector(Math.floor(random(this.colsDraw/2 ,this.colsDraw-1)), Math.floor(random(this.rowsDraw-1)));
 			(matriz[this.finalPos.y * this.colsDraw + this.finalPos.x])? valido = false : valido = true
 		}
 		//console.log(this.finalPos);
