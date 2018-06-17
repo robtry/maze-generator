@@ -2,7 +2,7 @@
 #>= Maze Simulator
 #>= Author: Roberto Gervacio ~~ Mx ~~
 #>= Start Data: 11-03-18
-#>= Last Update: 15-06-18
+#>= Last Update: 17-06-18
 #>= Aditional Comments: using p5.js
 ===================================================*/
 let rWalker; // walker de menu [Objeto]
@@ -364,6 +364,7 @@ class MazeDraw
 		this.posY = 0;
 		this.responsiveTextX = 0;
 		this.responsiveTextY = 0;
+		this.mazeToDraw = [];
 
 		this.currentPosition;
 		this.inicialPos;
@@ -393,7 +394,7 @@ class MazeDraw
 	chooseInitialPosition()
 	{
 		this.inicialPos = createVector(0, this.rowsDraw - 1);
-		this.currentPosition = this.inicialPos;
+		this.currentPosition = createVector(0, this.rowsDraw - 1);  // si se igualan se rompe
 		//console.log(this.currentPosition)
 	}
 
@@ -418,8 +419,14 @@ class MazeDraw
 		this.finalPos = createVector(x, y);
 	}
 
-	drawMaze(mazeToDraw)
+	setMaze(mazeToDraw)
 	{
+		this.mazeToDraw = mazeToDraw;
+	}
+
+	drawMaze()
+	{
+		background(255);
 		rectMode(CORNER);
 		strokeWeight(1); // contorno de los cuadritos
 		this.anchoCuadrito = (anchoMaze - 30) / this.colsDraw;
@@ -441,7 +448,9 @@ class MazeDraw
 				//condiciones para que dibuje las posiciones
 				if (i == this.inicialPos.y && j == this.inicialPos.x) fill("#2980b9"); //azul
 				else if (i == this.finalPos.y && j == this.finalPos.x) fill("#e67e22"); //naranja
-				else (mazeToDraw[i * this.colsDraw + j]) ? fill("#000000") : fill("#ffffff")
+				else if(i == this.currentPosition.y && j == this.currentPosition.x) fill("#8e44ad");
+				else if (this.mazeToDraw[i * this.colsDraw + j] === undefined) fill("#1abc9c"); //verde
+				else (this.mazeToDraw[i * this.colsDraw + j]) ? fill("#000000") : fill("#ffffff")
 
 				rect(this.posX, this.posY, this.anchoCuadrito, this.altoCuadrito);
 
@@ -451,6 +460,28 @@ class MazeDraw
 			this.posY += this.altoCuadrito;
 			this.posX = 0;
 		}
+	}
+
+	passUp()
+	{
+		this.mazeToDraw[this.currentPosition.y * this.colsDraw + this.currentPosition.x] = undefined;
+		this.currentPosition.y -= 1;
+		this.drawMaze();
+	}
+
+	passDown()
+	{
+		//
+	}
+
+	pasLeft()
+	{
+		//
+	}
+
+	passRigth()
+	{
+		//
 	}
 }
 
@@ -548,8 +579,8 @@ function draw()
 	}
 	else if(stage == 1)
 	{
-		background(255); // limpiar
-		md.drawMaze(currentMaze);
+		md.setMaze(currentMaze);
+		md.drawMaze();
 		stage = 2;
 	}
 	else if(stage == 2) // do not repeat draw
@@ -755,3 +786,12 @@ function tryReloadMaze()
 {
 	(mg.isGenerado() || md.isImportado()) ?	stage = 1 : document.getElementById('history').value = mg.noReload;
 }
+
+/*
+function keyPressed()
+{
+	md.passUp();
+	console.log("inicial x:" + md.inicialPos.x + ", y:" + md.inicialPos.y);
+	console.log(" actual x:" + md.currentPosition.x + ", y:" + md.currentPosition.y);
+}
+*/
