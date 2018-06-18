@@ -16,8 +16,10 @@ var stage; //status actual
 var currentMaze = [];
 var responsiveSize; // boolean saber de que tamaño hay que dibujar el maze
 var atmPos; //boolean para saber que donde poner las posiciones
+var clearOnReload //boolean para saber si hay que limpiar todo el maze
 //botones
-let generateBtn, exportMazeBtn, loadMazeBtn, dropzone, photoBtn, sizeCheckBtn, changeSizeBtn, restartBtn, posCheckBtn, setPosBtn, clearOnReload;
+let historial; //textbox con el historial
+let generateBtn, exportMazeBtn, loadMazeBtn, dropzone, photoBtn, sizeCheckBtn, changeSizeBtn, restartBtn, posCheckBtn, setPosBtn;
 
 /*
 |========================|
@@ -188,6 +190,7 @@ class MazeGenerator
 		//print(this.colsGen + " " + this.rowsGen);
 
 		//borrar todo
+		//this.cuadritosAll = [];
 		while(this.cuadritosAll.length > 0)
 		{
 			this.cuadritosAll.pop();
@@ -476,6 +479,7 @@ class MazeDraw
 		this.mazeToDraw[this.currentPosition.y * this.colsDraw + this.currentPosition.x] = "v";
 		this.currentPosition.y -= 1;
 		this.drawMaze();
+		historial.value(historial.value() + "true\n");
 	}
 
 	passDown()
@@ -584,6 +588,8 @@ function setup()
 	restartBtn = select("#reiniciar");
 	restartBtn.mouseClicked(function(){ clearOnReload = true; tryReloadMaze();});
 
+	historial = select("#history");
+
 	//los números
 	textStyle(NORMAL);
 }
@@ -688,6 +694,10 @@ function tryLoadMaze(file, creadoAqui)
 	if(file.type == "text" || creadoAqui !== undefined)
 	{
 		currentMaze = []; // vaciarlo por si tenia algo
+		while(currentMaze.length > 0)
+		{
+			currentMaze.pop();
+		}
 
 		var matrizLeida;
 		if(creadoAqui == undefined)
