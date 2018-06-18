@@ -17,7 +17,7 @@ var currentMaze = [];
 var responsiveSize; // boolean saber de que tamaño hay que dibujar el maze
 var atmPos; //boolean para saber que donde poner las posiciones
 //botones
-let generateBtn, exportMazeBtn, loadMazeBtn, dropzone, photoBtn, sizeCheckBtn, changeSizeBtn, restartBtn, posCheckBtn, setPosBtn;
+let generateBtn, exportMazeBtn, loadMazeBtn, dropzone, photoBtn, sizeCheckBtn, changeSizeBtn, restartBtn, posCheckBtn, setPosBtn, clearOnReload;
 
 /*
 |========================|
@@ -365,6 +365,7 @@ class MazeDraw
 		this.responsiveTextX = 0;
 		this.responsiveTextY = 0;
 		this.mazeToDraw = [];
+		this.backUpMaze = [];
 
 		this.currentPosition;
 		this.inicialPos;
@@ -412,6 +413,7 @@ class MazeDraw
 	setInitialPos(x,y)
 	{
 		this.inicialPos = createVector(x, y);
+		this.currentPosition = createVector(x, y);
 	}
 
 	setFinalPos(x,y)
@@ -419,9 +421,16 @@ class MazeDraw
 		this.finalPos = createVector(x, y);
 	}
 
-	setMaze(mazeToDraw)
+	setMaze()
 	{
-		this.mazeToDraw = mazeToDraw;
+		this.mazeToDraw = [];
+		for(var i = 0; i < this.rowsDraw; i++)
+		{
+			for(var j = 0; j < this.colsDraw; j++)
+			{
+				this.mazeToDraw.push(currentMaze[i * this.colsDraw + j]);
+			}
+		}
 	}
 
 	drawMaze()
@@ -448,8 +457,8 @@ class MazeDraw
 				//condiciones para que dibuje las posiciones
 				if (i == this.inicialPos.y && j == this.inicialPos.x) fill("#2980b9"); //azul
 				else if (i == this.finalPos.y && j == this.finalPos.x) fill("#e67e22"); //naranja
-				else if(i == this.currentPosition.y && j == this.currentPosition.x) fill("#8e44ad");
-				else if (this.mazeToDraw[i * this.colsDraw + j] === undefined) fill("#1abc9c"); //verde
+				else if (i == this.currentPosition.y && j == this.currentPosition.x) fill("#8e44ad"); //morado
+				else if (this.mazeToDraw[i * this.colsDraw + j] == "v") fill("#1abc9c"); //verde
 				else (this.mazeToDraw[i * this.colsDraw + j]) ? fill("#000000") : fill("#ffffff")
 
 				rect(this.posX, this.posY, this.anchoCuadrito, this.altoCuadrito);
@@ -464,24 +473,30 @@ class MazeDraw
 
 	passUp()
 	{
-		this.mazeToDraw[this.currentPosition.y * this.colsDraw + this.currentPosition.x] = undefined;
+		this.mazeToDraw[this.currentPosition.y * this.colsDraw + this.currentPosition.x] = "v";
 		this.currentPosition.y -= 1;
 		this.drawMaze();
 	}
 
 	passDown()
 	{
-		//
+		this.mazeToDraw[this.currentPosition.y * this.colsDraw + this.currentPosition.x] = "v";
+		this.currentPosition.y += 1;
+		this.drawMaze();
 	}
 
-	pasLeft()
+	passLeft()
 	{
-		//
+		this.mazeToDraw[this.currentPosition.y * this.colsDraw + this.currentPosition.x] = "v";
+		this.currentPosition.x -= 1;
+		this.drawMaze();
 	}
 
 	passRigth()
 	{
-		//
+		this.mazeToDraw[this.currentPosition.y * this.colsDraw + this.currentPosition.x] = "v";
+		this.currentPosition.x += 1;
+		this.drawMaze();
 	}
 }
 
@@ -535,6 +550,9 @@ function setup()
 	//posiciones del maze
 	atmPos = true;
 
+	//al redibujar, se limpie o no
+	 clearOnReload = true;
+
 	//botones
 	generateBtn = select("#generar");
 	generateBtn.mouseClicked(tryGenerar);
@@ -564,7 +582,7 @@ function setup()
 	setPosBtn.mousePressed(trySetPositions);
 
 	restartBtn = select("#reiniciar");
-	restartBtn.mouseClicked(tryReloadMaze);
+	restartBtn.mouseClicked(function(){ clearOnReload = true; tryReloadMaze();});
 
 	//los números
 	textStyle(NORMAL);
@@ -579,7 +597,11 @@ function draw()
 	}
 	else if(stage == 1)
 	{
-		md.setMaze(currentMaze);
+		if(clearOnReload)
+		{
+			md.setMaze();
+			clearOnReload = false;
+		}
 		md.drawMaze();
 		stage = 2;
 	}
@@ -762,6 +784,7 @@ function trySetPositions()
 					document.getElementById('history').value = "Nuevas posiciones establecidas";
 	
 					//para que se vuelva a dibujar
+					clearOnReload = true;
 					stage = 1;
 				}
 				else
@@ -784,14 +807,19 @@ function trySetPositions()
 
 function tryReloadMaze()
 {
-	(mg.isGenerado() || md.isImportado()) ?	stage = 1 : document.getElementById('history').value = mg.noReload;
+	if(mg.isGenerado() || md.isImportado())
+	{
+		if (clearOnReload) md.currentPosition = createVector(md.inicialPos.x, md.inicialPos.y);
+		
+		stage = 1;
+	}
+	else document.getElementById('history').value = mg.noReload;
 }
 
-/*
 function keyPressed()
 {
-	md.passUp();
-	console.log("inicial x:" + md.inicialPos.x + ", y:" + md.inicialPos.y);
-	console.log(" actual x:" + md.currentPosition.x + ", y:" + md.currentPosition.y);
+	if (keyCode === RIGHT_ARROW) md.passRigth();
+	else if(keyCode === LEFT_ARROW) md.passLeft();
+	else if(keyCode === UP_ARROW) md.passUp();
+	else if(keyCode === DOWN_ARROW) md.passDown();
 }
-*/
