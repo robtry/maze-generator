@@ -728,6 +728,10 @@ function tryLoadMaze(file, creadoAqui)
 		md.chooseInitialPosition();
 		md.chooseFinalPosition(currentMaze);
 
+		//corrige el bug
+		clearOnReload = true;
+		tryReloadMaze();
+
 		stage = 1;
 
 	}
