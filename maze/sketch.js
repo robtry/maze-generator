@@ -479,7 +479,6 @@ class MazeDraw
 		this.mazeToDraw[this.currentPosition.y * this.colsDraw + this.currentPosition.x] = "v";
 		this.currentPosition.y -= 1;
 		this.drawMaze();
-		historial.value(historial.value() + "true\n");
 	}
 
 	passDown()
@@ -511,9 +510,14 @@ class MazeController
 		//
 	}
 
-	addPass()
+	permitPass()
 	{
+		historial.value(historial.value() + "true\n");
+	}
 
+	denyPass()
+	{
+		historial.value(historial.value() + "false\n");	
 	}
 }
 
@@ -580,7 +584,7 @@ function setup()
 	changeSizeBtn.mouseClicked(tryChangeSize);
 
 	posCheckBtn = select("#posCheck");
-	posCheckBtn.changed(function(){ atmPos = !atmPos });
+	posCheckBtn.changed(function(){ atmPos = !atmPos; tryReloadMaze() });
 
 	setPosBtn = select("#posBtn");
 	setPosBtn.mousePressed(trySetPositions);
@@ -832,8 +836,24 @@ function tryReloadMaze()
 
 function keyPressed()
 {
-	if (keyCode === RIGHT_ARROW) md.passRigth();
-	else if(keyCode === LEFT_ARROW) md.passLeft();
-	else if(keyCode === UP_ARROW) md.passUp();
-	else if(keyCode === DOWN_ARROW) md.passDown();
+	if (keyCode === RIGHT_ARROW)
+	{
+		if(currentMaze[md.currentPosition.y * md.colsDraw + (md.currentPosition.x+1)] || md.currentPosition.x == md.colsDraw - 1){mc.denyPass();}
+		else{ md.passRigth(); mc.permitPass();}
+	}
+	else if(keyCode === LEFT_ARROW)
+	{
+		if(currentMaze[md.currentPosition.y * md.colsDraw + (md.currentPosition.x-1)] || md.currentPosition.x == 0) {mc.denyPass();}
+		else{ md.passLeft(); mc.permitPass();}
+	}
+	else if(keyCode === UP_ARROW)
+	{
+		if(currentMaze[(md.currentPosition.y - 1) * md.colsDraw + md.currentPosition.x] || md.currentPosition.y == 0) {mc.denyPass();}
+		else{ md.passUp(); mc.permitPass();}
+	}
+	else if(keyCode === DOWN_ARROW)
+	{
+		if(currentMaze[(md.currentPosition.y + 1) * md.colsDraw + md.currentPosition.x] || md.currentPosition.y == md.rowsDraw - 1){ mc.denyPass();}
+		else{ md.passDown(); mc.permitPass();}
+	}
 }
