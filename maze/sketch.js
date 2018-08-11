@@ -5,18 +5,8 @@
 #>= Last Update: 17-06-18
 #>= Aditional Comments: using p5.js
 ===================================================*/
-let rWalker; // walker de menu [Objeto]
-let mg; //maze generator [Objeto]
-let md; //maze draw [Objeto]
-let mc; // maze controller [Objeto]
-var anchoMaze, altoMaze; //dimesiones dinamicas del canvas
-var stage; //status actual
-// stage = 0 -> Menu
-// stage = 1 -> Maze
-var currentMaze = [];
-var responsiveSize; // boolean saber de que tamaño hay que dibujar el maze
-var atmPos; //boolean para saber que donde poner las posiciones
-var clearOnReload //boolean para saber si hay que limpiar todo el maze
+
+
 //botones
 let historial; //textbox con el historial
 let generateBtn, exportMazeBtn, loadMazeBtn, dropzone, photoBtn, sizeCheckBtn, changeSizeBtn, restartBtn, posCheckBtn, setPosBtn;
@@ -537,15 +527,6 @@ function setup()
 
 	//inciar el random walker
 	rWalker = new RandomWalker(anchoMaze/2, altoMaze/2, random(16) + 8);
-
-	//iniciar el generador
-	mg = new MazeGenerator();
-
-	//iniciar el dibujador
-	md = new MazeDraw();
-
-	//iniciar el controlador de leer los datos
-	mc = new MazeController();
 
 	//status, empieza en el menu
 	stage = 0;
