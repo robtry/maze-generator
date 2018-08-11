@@ -2,636 +2,102 @@
 #>= Maze Simulator
 #>= Author: Roberto Gervacio ~~ Mx ~~
 #>= Start Data: 11-03-18
-#>= Last Update: 17-06-18
+#>= Last Update: 11-08-18
 #>= Aditional Comments: using p5.js
+# this file describes all a new verson of maze simulator
 ===================================================*/
 
+/*
+|====================================|
+|=========Variables globales=========|
+|====================================|
+*/
 
-//botones
+const anchoConsola = 140; //ancho de la consola en px para que se vea el maze
+let anchoMaze = 0, altoMaze = 0; //dimesiones dinamicas del canvas
+let stage = 0; //status actual #stage = 0 -> Menu #stage = 1 -> Maze
+let currentMaze = [];
+let responsiveSize = true; // boolean saber de que tamaño hay que dibujar el maze
+let atmPos = true; //boolean para saber que donde poner las posiciones de los controladores
+let clearOnReload = true; //boolean para saber si hay que limpiar todo el maze, al redibujar, se limpie o no
 let historial; //textbox con el historial
-let generateBtn, exportMazeBtn, loadMazeBtn, dropzone, photoBtn, sizeCheckBtn, changeSizeBtn, restartBtn, posCheckBtn, setPosBtn;
+let rw; // walker de menu [Objeto], es let para que se inicialice centrado
+const mg = new MazeGenerator(); //maze generator [Objeto]
+const md = new MazeDraw(); //maze draw [Objeto]
+const mc = new MazeController();
 
 /*
-|========================|
-|=========clases=========|
-|========================|
+|======================================|
+|=========funciones del canvas=========|
+|======================================|
 */
 
-class RandomWalker
-{
-	constructor(x, y, r)
-	{
-		this.x = x;
-		this.y = y;
-		this.r = r;
-	}
-
-	step()
-	{
-		this.lastX = this.x;
-		this.lastY = this.y;
-
-		var mov = Math.floor(random(4));
-		switch(mov)
-		{
-			case 0: this.x-=this.r; break;
-			case 1: this.y+=this.r; break;
-			case 2: this.x+=this.r; break;
-			case 3: this.y-=this.r; break;
-		}
-
-		this.x = constrain(this.x,this.r,anchoMaze-this.r);
-		this.y = constrain(this.y,this.r,altoMaze-this.r);
-
-	}
-
-	show()
-	{
-		stroke(random(255)); //color
-		strokeWeight(3); //ancho
-
-		fill(0);
-		rect(this.x,this.y,this.r,this.r);
-
-		fill(255);
-		rect(this.lastX,this.lastY,this.r,this.r);
-	}
-}
-
-class MazeGenerator
-{
-	//https://en.wikipedia.org/wiki/Maze_generation_algorithm#Recursive_backtracker
-
-	constructor()
-	{
-		this.generado = false;
-		this.noValid = "Datos no válidos";
-		this.noValidMessage = "Los valores para generar el laberinto, deben ser enteros positivos";
-		this.onlyOdd = "Los valores deben ser números impares";
-		this.noExport = "No hay nada para exportar";
-		this.noReload = "No hay nada para recargar";
-		this.correctMessage = "Creado correctamente";
-		this.noToResponsive = "Los valores para las dimensiones del laberinto deben ser enteros positivos mayores a 100";
-		this.realRows = 0;
-		this.realCols = 0;
-		//los del algoritmo
-		this.rowsGen = 0;
-		this.colsGen = 0;
-		this.cuadritosAll = [];
-		this.currentCelda;
-		this.nextCelda;
-		this.cell;
-		this.stack = [];
-	}
-
-	isGenerado()
-	{
-		return this.generado;
-	}
-
-	exportar(send)
-	{
-		var writer;
-
-		//si el argumento esta vacio entonces debe imprimirlo
-		(send == undefined) ? writer = createWriter('currentMaze.txt') : writer = ""
-
-		//[top, rigth, bottom, left];
-		var cadena = "";
-		var toPrintCols, toPrintRows;
-
-		if(this.realRows % 2 == 0) toPrintRows =  this.rowsGen * 2;
-		else toPrintRows = (this.rowsGen * 2) - 1;
-
-		if(this.realCols % 2 == 0) toPrintCols = this.colsGen * 2;
-		else toPrintCols = (this.colsGen * 2) - 1;
-
-		(send == undefined) ? writer.print(toPrintRows +" "+ toPrintCols) : writer += toPrintRows +" "+ toPrintCols + "\n"
-
-		for (var i = 0; i < this.rowsGen; i++)
-		{
-			//top
-			cadena = "";
-			for(var j = 0; j < this.colsGen; j++)
-			{
-				if(i == 0 && this.realRows % 2 == 0)
-				{
-					//son tops ver si el de la derecha solo entra cuando sea par
-					(this.cuadritosAll[i*this.colsGen+j].walls[1]) ? cadena += "01" : cadena += "11"
-				}
-				else
-				{
-					if(j != this.colsGen-1)
-					{
-						if (this.cuadritosAll[i*this.colsGen+j].walls[0]) cadena += "11"
-						else (this.cuadritosAll[(i-1)*this.colsGen+j].walls[1] || this.cuadritosAll[i*this.colsGen+j].walls[1]) ? cadena+="01" : cadena+= "00"
-
-					}
-					else
-					{
-						//es la última columna
-						if(this.realCols % 2 == 0)
-							(this.cuadritosAll[i*this.colsGen+(j-1)].walls[1]) ? cadena += "01" : cadena += "00"
-						else
-							(this.cuadritosAll[i*this.colsGen+j].walls[0]) ? cadena += "1" : cadena += "0"
-					}
-				}
-			}
-
-			if(i != 0 || this.realRows % 2 == 0)
-			{
-				(send == undefined) ? writer.print(cadena) : writer += cadena + "\n"
-			}
-
-			//derechas
-			cadena = "";
-			for(var j = 0; j < this.colsGen; j++)
-			{
-				if(j != this.colsGen-1) (this.cuadritosAll[i*this.colsGen+j].walls[1]) ? cadena+="01" : cadena+="00"
-				else
-				{
-					//es la última columna
-					//(this.realCols % 2 == 0) ? cadena += "00" : cadena += "0"
-					if(this.realCols % 2 == 0)
-						(this.cuadritosAll[i*this.colsGen+(j-1)].walls[1]) ? cadena += "01" : cadena += "00"
-					else
-						cadena += "0"
-				}
-			}
-
-			(send == undefined) ? writer.print(cadena) : writer += cadena + "\n"
-		}
-
-		if (send == undefined) writer.close();
-		else return writer;
-	}
-
-	crear(r, c)
-	{
-		this.realRows = r;
-		this.realCols = c;
-
-		if(r % 2 == 0) this.rowsGen = r / 2;
-		else this.rowsGen = (r + 1) / 2;
-
-		if(c % 2 == 0) this.colsGen = c / 2;
-		else this.colsGen = (c + 1) / 2;
-
-		//print(this.colsGen + " " + this.rowsGen);
-
-		//borrar todo
-		//this.cuadritosAll = [];
-		while(this.cuadritosAll.length > 0)
-		{
-			this.cuadritosAll.pop();
-		}
-
-		for(var i = 0; i < this.rowsGen; i++)
-		{
-			for(var j = 0; j < this.colsGen; j++)
-			{
-				this.cuadritosAll.push(new Cuadro(i,j)); // arreglo con todos los cuadritos
-			}
-		}
-
-		//1.- Make the initial cell the current cell and mark it as visited
-		this.currentCelda = this.cuadritosAll[0];
-		this.currentCelda.visited = true;
-
-		//2.- While there are unvisited cells
-		while(this.areUnVisited())
-		{
-		//2.1.- If the current cell has any neighbours which have not been visited || lo hace el metodo checkVecinos()
-			//2.1.1.- Choose randomly one of the unvisited neighbours || lo hace el metodo checkVecinos()
-			this.nextCelda = this.currentCelda.checkVecinos(this.colsGen, this.rowsGen, this.cuadritosAll);
-
-			if(this.nextCelda) // si no regreso undefined, o sea hay un vecino que no ha sido visitado
-			{
-			//2.1.2.- Push the current cell to the stack
-				this.stack.push(this.currentCelda);
-			//2.1.3.- Remove the wall between the current cell and the chosen cell || lo hace removeWalls()
-				this.currentCelda.removeWalls(this.nextCelda);
-			//2.1.4.- Make the chosen cell the current cell and mark it as visited
-				this.currentCelda = this.nextCelda;
-				this.currentCelda.visited = true;
-			}
-		//2.2.- Else if stack is not empty
-			else if(this.stack.length > 0)
-			{
-			//2.2.1.- Pop a cell from the stack
-				this.cell = this.stack.pop();
-			//2.2.2.- Make it the current cell
-				this.currentCelda = this.cell;
-			}
-		}
-
-		//print("terminado");
-		this.generado = true;
-	}
-
-	areUnVisited()
-	{
-		var seguir = false;
-
-		for(var i = 0; i < this.cuadritosAll.length && !seguir; i++)
-		{
-				if (!this.cuadritosAll[i].visited) seguir = true;
-				//print(this.cuadritosAll[i].visited);
-		}
-
-		return seguir;
-	}
-}
-
-class Cuadro
-{
-	constructor(i, j)
-	{
-		this.i = i;
-		this.j = j;
-		this.walls = [true, true, true, true];
-		//...........[top, rigth, bottom, left];
-		this.visited = false;
-	}
-
-	index(i, j, c, r)
-	{
-		if(i < 0 || j < 0 || i > r-1 || j > c-1)
-		{
-			//son index invalidos
-			return -1;
-		}
-		else
-		{
-			//indexFila*numeroColums + indexColum
-			return i*c + j;
-			// la formula anterior regresa la posicion, como si fuera un arreglo bidemsional
-			//siendo unidimensional
-		}
-	}
-
-	checkVecinos(c, r, cuadritosAllC)
-	{
-		//cada celda tiene 4 vecinos
-		//        [i-1,j]
-		// [i,j-1] [i,j] [i,j+1]
-		//        [i+1,j]
-		var vecinos = [];
-		// como es de una sola dimension
-		var top =    cuadritosAllC[this.index(this.i-1,this.j  , c, r)];
-		var right =  cuadritosAllC[this.index(this.i  ,this.j+1, c, r)];
-		var bottom = cuadritosAllC[this.index(this.i+1,this.j  , c, r)];
-		var left =   cuadritosAllC[this.index(this.i  ,this.j-1, c, r)];
-		//si reciben -1, toman el valor de undefined,entonces hay que ver que sean validos:
-
-		//2.1.- If the current cell has any neighbours which have not been visited
-
-		if (top    && !top.visited)    vecinos.push(top);
-		if (right  && !right.visited)  vecinos.push(right);
-		if (bottom && !bottom.visited) vecinos.push(bottom);
-		if (left   && !left.visited)   vecinos.push(left);
-
-		//2.1.1.- Choose randomly one of the unvisited neighbours
-		if(vecinos.length > 0)
-		{
-			var r = Math.floor(random(0,vecinos.length))
-			return vecinos[r];
-		}
-		else
-		{
-			return undefined;
-		}
-	}
-
-	removeWalls(next)
-	{
-		//cuatro escenarios
-		//1: [current][next] => current.j - next.j = 1; => remover izquierdo y derecho
-		//2: [next][current] => current.j - next.j = -1; => remover derecho e izquierdo
-		//3: [current]       => current.i - next.i = -1; => remover abajo y arriba
-		//    [next]
-		//4:  [next]         => current.i - next.i = 1; => remove arriba y abajo
-		//   [current]
-
-		//[top, rigth, bottom, left];
-		//[0  ,   1   ,   2  ,  3  ];
-
-		var x = this.j - next.j;
-		if(x == 1)
-		{
-			this.walls[3] = false;
-			next.walls[1] = false;
-		}
-		else if(x == -1)
-		{
-			this.walls[1] = false;
-			next.walls[3] = false;
-		}
-
-		var y = this.i - next.i;
-
-		if(y == 1)
-		{
-			this.walls[0] = false;
-			next.walls[2] = false;
-		}
-		else if(y == -1)
-		{
-			this.walls[2] = false;
-			next.walls[0] = false;
-		}
-
-	}
-}
-
-class MazeDraw
-{
-	constructor()
-	{
-		this.importado = false;
-		this.rowsDraw = 0;
-		this.colsDraw = 0;
-		this.anchoCuadrito = 0;
-		this.altoCuadrito = 0;
-		this.posX = 0;
-		this.posY = 0;
-		this.responsiveTextX = 0;
-		this.responsiveTextY = 0;
-		this.mazeToDraw = [];
-		this.backUpMaze = [];
-
-		this.currentPosition;
-		this.inicialPos;
-		this.finalPos;
-	}
-
-	setRows(r)
-	{
-		this.rowsDraw = r;
-	}
-
-	setCols(c)
-	{
-		this.colsDraw = c;
-	}
-
-	setImportado()
-	{
-		this.importado = true;
-	}
-
-	isImportado()
-	{
-		return this.importado;
-	}
-
-	chooseInitialPosition()
-	{
-		this.inicialPos = createVector(0, this.rowsDraw - 1);
-		this.currentPosition = createVector(0, this.rowsDraw - 1);  // si se igualan se rompe
-		//console.log(this.currentPosition)
-	}
-
-	chooseFinalPosition(matriz)
-	{
-		var valido = false;
-		while(!valido)
-		{
-			this.finalPos = createVector(Math.floor(random(this.colsDraw/2 ,this.colsDraw-1)), Math.floor(random(this.rowsDraw-1)));
-			(matriz[this.finalPos.y * this.colsDraw + this.finalPos.x])? valido = false : valido = true
-		}
-		//console.log(this.finalPos);
-	}
-
-	setInitialPos(x,y)
-	{
-		this.inicialPos = createVector(x, y);
-		this.currentPosition = createVector(x, y);
-	}
-
-	setFinalPos(x,y)
-	{
-		this.finalPos = createVector(x, y);
-	}
-
-	setMaze()
-	{
-		this.mazeToDraw = [];
-		for(var i = 0; i < this.rowsDraw; i++)
-		{
-			for(var j = 0; j < this.colsDraw; j++)
-			{
-				this.mazeToDraw.push(currentMaze[i * this.colsDraw + j]);
-			}
-		}
-	}
-
-	drawMaze()
-	{
-		background(255);
-		rectMode(CORNER);
-		strokeWeight(1); // contorno de los cuadritos
-		this.anchoCuadrito = (anchoMaze - 30) / this.colsDraw;
-		this.altoCuadrito = (altoMaze - 30) / this.rowsDraw;
-		this.posX = 0;
-		this.posY = 0;
-		this.responsiveTextX  = this.anchoCuadrito/3;
-		this.responsiveTextY = this.altoCuadrito/2;
-
-		for(var i = 0; i < this.rowsDraw; i++)
-		{
-			for(var j = 0; j < this.colsDraw; j++)
-			{
-				if(j == this.colsDraw - 1 || i == this.rowsDraw - 1){noStroke();fill(0);}
-				if(j == this.colsDraw - 1){textSize(this.responsiveTextY); text(i, anchoMaze - 25, this.posY + (this.altoCuadrito/2) + (this.altoCuadrito/5));}
-				if(i == this.rowsDraw - 1){textSize(this.responsiveTextX); text(j,this.posX + this.anchoCuadrito/2, altoMaze - 10);}
-
-				stroke(0);
-				//condiciones para que dibuje las posiciones
-				if (i == this.inicialPos.y && j == this.inicialPos.x) fill("#2980b9"); //azul
-				else if (i == this.finalPos.y && j == this.finalPos.x) fill("#e67e22"); //naranja
-				else if (i == this.currentPosition.y && j == this.currentPosition.x) fill("#8e44ad"); //morado
-				else if (this.mazeToDraw[i * this.colsDraw + j] == "v") fill("#1abc9c"); //verde
-				else (this.mazeToDraw[i * this.colsDraw + j]) ? fill("#000000") : fill("#ffffff")
-
-				rect(this.posX, this.posY, this.anchoCuadrito, this.altoCuadrito);
-
-				this.posX += this.anchoCuadrito;
-			}
-
-			this.posY += this.altoCuadrito;
-			this.posX = 0;
-		}
-	}
-
-	passUp()
-	{
-		this.mazeToDraw[this.currentPosition.y * this.colsDraw + this.currentPosition.x] = "v";
-		this.currentPosition.y -= 1;
-		this.drawMaze();
-	}
-
-	passDown()
-	{
-		this.mazeToDraw[this.currentPosition.y * this.colsDraw + this.currentPosition.x] = "v";
-		this.currentPosition.y += 1;
-		this.drawMaze();
-	}
-
-	passLeft()
-	{
-		this.mazeToDraw[this.currentPosition.y * this.colsDraw + this.currentPosition.x] = "v";
-		this.currentPosition.x -= 1;
-		this.drawMaze();
-	}
-
-	passRigth()
-	{
-		this.mazeToDraw[this.currentPosition.y * this.colsDraw + this.currentPosition.x] = "v";
-		this.currentPosition.x += 1;
-		this.drawMaze();
-	}
-}
-
-class MazeController
-{
-	constructor()
-	{
-		//
-	}
-
-	permitPass()
-	{
-		historial.value(historial.value() + "true\n");
-	}
-
-	denyPass()
-	{
-		historial.value(historial.value() + "false\n");	
-	}
-}
-
-/*
-|========================|
-|=========canvas=========|
-|========================|
-*/
-
-function setup()
-{
+function setup() {
+	
 	calcularMaze(); // tamaño responsive
+    //posicionar el canvas desde el DOM
+    createCanvas(anchoMaze, altoMaze).parent('myContainer');
+    clearStage();
+	rw = new RandomWalker(anchoMaze / 2, altoMaze / 2, Math.round(Math.random() * 16 + 8)); 
 
-	//para posicionarlo desde el dom
-	var myCanvas = createCanvas(anchoMaze, altoMaze);
-	myCanvas.parent('myContainer');
+    //botones
+    select("#generar").mouseClicked(tryGenerar);
+    select("#mazeExport").mouseClicked(tryExportMaze);
+    createFileInput(tryLoadMaze).parent("loadMaze");
+    select("#dropzone").drop(tryLoadMaze);
+    select("#photo").mousePressed(function (){save('my.png');});
+    select("#sizeCheck").changed(function (){responsiveSize = !responsiveSize; windowResized();});
+    select("#sizeBtn").mouseClicked(tryChangeSize);
+    select("#posCheck").changed(function(){ atmPos = !atmPos; tryReloadMaze() });
+    select("#posBtn").mousePressed(trySetPositions);
+    select("#reiniciar").mouseClicked(function(){ clearOnReload = true; tryReloadMaze();});
+    historial = select("#history");
 
-	//inciar el random walker
-	rWalker = new RandomWalker(anchoMaze/2, altoMaze/2, random(16) + 8);
-
-	//status, empieza en el menu
-	stage = 0;
-	stageTemp = stage;
-	changingStage();
-
-	//medida responsive del maze
-	responsiveSize = true;
-
-	//posiciones del maze
-	atmPos = true;
-
-	//al redibujar, se limpie o no
-	 clearOnReload = true;
-
-	//botones
-	generateBtn = select("#generar");
-	generateBtn.mouseClicked(tryGenerar);
-
-	exportMazeBtn = select("#mazeExport");
-	exportMazeBtn.mouseClicked(tryExportMaze);
-
-	loadMazeBtn = createFileInput(tryLoadMaze);
-	loadMazeBtn.parent("loadMaze");
-
-	dropzone = select("#dropzone");
-	dropzone.drop(tryLoadMaze);
-
-	photoBtn = select("#photo");
-	photoBtn.mousePressed(function (){save('my.png');});
-
-	sizeCheckBtn = select("#sizeCheck");
-	sizeCheckBtn.changed(function (){responsiveSize = !responsiveSize; windowResized();});
-
-	changeSizeBtn = select("#sizeBtn");
-	changeSizeBtn.mouseClicked(tryChangeSize);
-
-	posCheckBtn = select("#posCheck");
-	posCheckBtn.changed(function(){ atmPos = !atmPos; tryReloadMaze() });
-
-	setPosBtn = select("#posBtn");
-	setPosBtn.mousePressed(trySetPositions);
-
-	restartBtn = select("#reiniciar");
-	restartBtn.mouseClicked(function(){ clearOnReload = true; tryReloadMaze();});
-
-	historial = select("#history");
-
-	//los números
-	textStyle(NORMAL);
+    //los numeros
+    textStyle(NORMAL);
 }
 
-function draw()
-{
-	if(stage == 0) // menu
-	{
-		rWalker.show();
-		rWalker.step();
-	}
-	else if(stage == 1)
-	{
-		if(clearOnReload)
-		{
+function draw() {
+    if(stage == 0) 	{
+		rw.show();
+		rw.step();
+	} else if(stage == 1) {
+		if(clearOnReload) {
 			md.setMaze();
 			clearOnReload = false;
 		}
 		md.drawMaze();
 		stage = 2;
-	}
-	else if(stage == 2) // do not repeat draw
-	{
-		//noLoop();
+	} else if(stage == 2) { // do not repeat draw
+		noLoop();
 	}
 }
 
-function windowResized()
-{
-	if(responsiveSize)
-	{
+function windowResized() {
+	if(responsiveSize) {
 		calcularMaze();
 		resizeCanvas(anchoMaze, altoMaze);
-		changingStage();
+		clearStage();
 	}
 
 	if(stage == 2) tryReloadMaze();
 }
 
-
 /*
-|========================|
-|==funciones del canvas==|
-|========================|
+|===================================|
+|==funciones auxiliares del canvas==|
+|===================================|
 */
 
-function calcularMaze()
-{
-	anchoMaze = innerWidth * (9.5/10) - 140; //ancho de la consola
+function calcularMaze() {
+	anchoMaze = innerWidth * (9.5/10) - anchoConsola;
 	altoMaze = innerHeight * (8.8/10);
 }
 
-function changingStage()
-{
-	rectMode(CENTER); // los reactangulos se dibujen desde el centro
-	background(255);
+function clearStage() {
 	//rectángulo de area principal
+	rectMode(CENTER); // los reactangulos se dibujen desde el centro
+    background(255);
 	stroke(0);//color
 	strokeWeight(8);//ancho del area principal
 	rect(anchoMaze/2, altoMaze/2, anchoMaze, altoMaze);
@@ -643,20 +109,17 @@ function changingStage()
 |============================|
 */
 
-function tryGenerar()
-{
-	var rows = parseInt(document.getElementById('rowsG').value);
-	var cols = parseInt(document.getElementById('colsG').value);
+function tryGenerar() {
+	let rows = parseInt(document.getElementById('rowsG').value);
+	let cols = parseInt(document.getElementById('colsG').value);
 
-	if(rows <= 0 || cols  <= 0 || isNaN(rows) || isNaN(cols))
-	{
+	if(rows <= 0 || cols  <= 0 || isNaN(rows) || isNaN(cols)) {
 		//no válido
 		document.getElementById('history').value = mg.noValid + "\n\n" + mg.noValidMessage;
 	}
-	else
-	{
+	else {
 		mg.crear(rows, cols);
-		document.getElementById('history').value = mg.correctMessage;
+		historial.value(historial.value() + mg.correctMessage + "\n");
 
 		//se muestre lo que acabamos de generar
 		tryLoadMaze(mg.exportar(false), true); //regrese un arreglo
@@ -664,47 +127,41 @@ function tryGenerar()
 	}
 }
 
-function tryExportMaze()
-{
-	if(mg.isGenerado())
-	{
+function tryExportMaze() {
+	if(mg.generado) {
 		mg.exportar(); // no regresa nada manda a descargar el txt del maze
-		document.getElementById('history').value = "Exportado correctamente";
+        historial.value(historial.value() + "Exportado correctamente\n");
 	}
-	else document.getElementById('history').value = mg.noExport;
+	else historial.value(historial.value() + mg.noExport + "\n");
 }
 
-function tryLoadMaze(file, creadoAqui)
-{
-	if(file.type == "text" || creadoAqui !== undefined)
-	{
+function tryLoadMaze(file, creadoAqui) {
+	if(file.type == "text" || creadoAqui !== undefined) {
 		currentMaze = []; // vaciarlo por si tenia algo
-		while(currentMaze.length > 0)
-		{
+		while(currentMaze.length > 0) {
+            console.log("no funciono la asignacion al vacio");
 			currentMaze.pop();
 		}
 
-		var matrizLeida;
-		if(creadoAqui == undefined)
-		{
+		let matrizLeida;
+		if(creadoAqui == undefined)	{
 			//es importado
 			 matrizLeida = file.data.split("\n");
-			 md.setImportado();
-		}
-		else
-		{
+			 md.importado = true;
+		} else {
 			//generado aqui
 			matrizLeida = file.split("\n")
 		}
 
-		md.setRows(matrizLeida[0].split(" ")[0]);
-		md.setCols(matrizLeida[0].split(" ")[1]);
-		var matrizTempCols;
+		md.rowsDraw = matrizLeida[0].split(" ")[0];
+        md.colsDraw = matrizLeida[0].split(" ")[1];
+        
+		let matrizTempCols;
 
-		for(var i = 0; i < md.rowsDraw; i++)
+		for(let i = 0; i < md.rowsDraw; i++)
 		{
 			matrizTempCols = matrizLeida[i+1].split("");
-			for(var j = 0; j < md.colsDraw; j++)
+			for(let j = 0; j < md.colsDraw; j++)
 			{
 				currentMaze.push(matrizTempCols[j] == "1");
 			}
@@ -719,25 +176,19 @@ function tryLoadMaze(file, creadoAqui)
 
 		stage = 1;
 
-	}
-	else
-	{
-		document.getElementById('history').value = "Archivo no válido"
+	} else {
+        historial.value(historial.value() + "Archivo no válido\n");
 	}
 }
 
-function tryChangeSize()
-{
-	var newAlto = parseInt(document.getElementById('largoM').value);
-	var newAncho = parseInt(document.getElementById('altoM').value);
+function tryChangeSize() {
+	let newAlto = parseInt(document.getElementById('largoM').value);
+	let newAncho = parseInt(document.getElementById('altoM').value);
 
-	if(newAlto <= 100 || newAncho <= 100 || isNaN(newAlto) || isNaN(newAncho))
-	{
+	if(newAlto <= 100 || newAncho <= 100 || isNaN(newAlto) || isNaN(newAncho)) {
 		//no válidas
-		document.getElementById('history').value = mg.noValid + "\n\n" + mg.noToResponsive +"\nY ambos deben ser específicados";
-	}
-	else
-	{
+		historial.value(historial.value() + mg.noValid + "\n\n" + mg.noToResponsive +"\nY ambos deben ser específicados");
+	} else {
 		//son validos
 		altoMaze = newAlto;
 		anchoMaze = newAncho;
@@ -745,16 +196,13 @@ function tryChangeSize()
 	}
 }
 
-function trySetPositions()
-{
-	if(mg.isGenerado() || md.isImportado())
-	{
-		var xS, yS, xE, yE;
-		var startPos = document.getElementById('inicioC').value;
-		var endPos = document.getElementById('finC').value;
+function trySetPositions() {
+	if(mg.generado || md.importado)	{
+		let xS, yS, xE, yE;
+		let startPos = document.getElementById('inicioC').value;
+		let endPos = document.getElementById('finC').value;
 
-		if(startPos.includes(",") && endPos.includes(","))
-		{
+		if(startPos.includes(",") && endPos.includes(",")){
 			xS = parseInt(startPos.split(",")[0]);
 			yS = parseInt(startPos.split(",")[1]);
 			xE = parseInt(endPos.split(",")[0]);
@@ -770,49 +218,41 @@ function trySetPositions()
 			)
 			{
 				//no válido
-				document.getElementById('history').value = "No son números válidos";
+                historial.value(historial.value() + "No son números válidos\n");
 			}
 			else
 			{
 				//números válidos dentro del maze y distintos a si
-				if(!(currentMaze[yS * md.colsDraw + xS]) && !(currentMaze[yE * md.colsDraw + xE]))
-				{
+				if(!(currentMaze[yS * md.colsDraw + xS]) && !(currentMaze[yE * md.colsDraw + xE])) {
 					//estan disponibles
 					md.setInitialPos(xS,yS);
 					md.setFinalPos(xE,yE);
-					document.getElementById('history').value = "Nuevas posiciones establecidas";
+                    historial.value(historial.value() + "Nuevas posiciones establecidas\n");
 	
 					//para que se vuelva a dibujar
 					clearOnReload = true;
-					stage = 1;
-				}
-				else
-				{
-					document.getElementById('history').value = "No se puede establecer esta posición";
+                    stage = 1;
+                    
+				} else {
+                    historial.value(historial.value() + "No se puede establecer esta posición\n");
 				}
 			}
-		}
-		else
-		{
-			document.getElementById('history').value = "Hay un error con las cordenadas";
-		}
-	
-	}
-	else
-	{
-		document.getElementById('history').value = "Debe haber un laberinto en el cavas";
+		} else { historial.value(historial.value() + "Hay un error con las cordenadas\n");	}
+	} else {
+        historial.value(historial.value() + "Debe haber un laberinto en el cavas\n");
 	}
 }
 
 function tryReloadMaze()
 {
-	if(mg.isGenerado() || md.isImportado())
-	{
-		if (clearOnReload) md.currentPosition = createVector(md.inicialPos.x, md.inicialPos.y);
-		
+	loop();
+	loop();
+	if(mg.generado || md.importado)	{
+        if (clearOnReload) md.currentPosition = createVector(md.inicialPos.x, md.inicialPos.y);
+        
 		stage = 1;
 	}
-	else document.getElementById('history').value = mg.noReload;
+	else historial.value(historial.value() + mg.noReload + "\n");
 }
 
 function keyPressed()

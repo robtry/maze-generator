@@ -15,19 +15,16 @@ class MazeDraw {
 		this.inicialPos;
 		this.finalPos;
 	}
-	isImportado() {
-		return this.importado;
-	}
 	chooseInitialPosition() {
 		this.inicialPos = createVector(0, this.rowsDraw - 1);
 		this.currentPosition = createVector(0, this.rowsDraw - 1); // si se igualan se rompe
 		//console.log(this.currentPosition)
 	}
 	chooseFinalPosition(matriz) {
-		var valido = false;
+		let valido = false;
 		while (!valido) {
 			this.finalPos = createVector(Math.floor(random(this.colsDraw / 2, this.colsDraw - 1)), Math.floor(random(this.rowsDraw - 1)));
-			(matriz[this.finalPos.y * this.colsDraw + this.finalPos.x]) ? valido = false : valido = true;
+			valido = !(matriz[this.finalPos.y * this.colsDraw + this.finalPos.x]);
 		}
 		//console.log(this.finalPos);
 	}
@@ -40,8 +37,8 @@ class MazeDraw {
 	}
 	setMaze() {
 		this.mazeToDraw = [];
-		for (var i = 0; i < this.rowsDraw; i++) {
-			for (var j = 0; j < this.colsDraw; j++) {
+		for (let i = 0; i < this.rowsDraw; i++) {
+			for (let j = 0; j < this.colsDraw; j++) {
 				this.mazeToDraw.push(currentMaze[i * this.colsDraw + j]);
 			}
 		}
@@ -56,8 +53,8 @@ class MazeDraw {
 		this.posY = 0;
 		this.responsiveTextX = this.anchoCuadrito / 3;
 		this.responsiveTextY = this.altoCuadrito / 2;
-		for (var i = 0; i < this.rowsDraw; i++) {
-			for (var j = 0; j < this.colsDraw; j++) {
+		for (let i = 0; i < this.rowsDraw; i++) {
+			for (let j = 0; j < this.colsDraw; j++) {
 				if (j == this.colsDraw - 1 || i == this.rowsDraw - 1) {
 					noStroke();
 					fill(0);

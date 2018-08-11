@@ -22,25 +22,19 @@ class MazeGenerator {
 		this.stack = [];
 	}
 	exportar(send) {
-		var writer;
+		let writer;
 		//si el argumento esta vacio entonces debe imprimirlo
 		(send == undefined) ? writer = createWriter('currentMaze.txt') : writer = "";
 		//[top, rigth, bottom, left];
-		var cadena = "";
-		var toPrintCols, toPrintRows;
-		if (this.realRows % 2 == 0)
-			toPrintRows = this.rowsGen * 2;
-		else
-			toPrintRows = (this.rowsGen * 2) - 1;
-		if (this.realCols % 2 == 0)
-			toPrintCols = this.colsGen * 2;
-		else
-			toPrintCols = (this.colsGen * 2) - 1;
+		let cadena = "";
+		let toPrintCols, toPrintRows;
+		toPrintRows =  ((this.realRows % 2 == 0) ? this.rowsGen * 2 : (this.rowsGen * 2) - 1);
+		toPrintCols = ((this.realCols % 2 == 0) ? this.colsGen * 2 : (this.colsGen * 2) - 1);
 		(send == undefined) ? writer.print(toPrintRows + " " + toPrintCols) : writer += toPrintRows + " " + toPrintCols + "\n";
-		for (var i = 0; i < this.rowsGen; i++) {
+		for (let i = 0; i < this.rowsGen; i++) {
 			//top
 			cadena = "";
-			for (var j = 0; j < this.colsGen; j++) {
+			for (let j = 0; j < this.colsGen; j++) {
 				if (i == 0 && this.realRows % 2 == 0) {
 					//son tops ver si el de la derecha solo entra cuando sea par
 					(this.cuadritosAll[i * this.colsGen + j].walls[1]) ? cadena += "01" : cadena += "11";
@@ -66,7 +60,7 @@ class MazeGenerator {
 			}
 			//derechas
 			cadena = "";
-			for (var j = 0; j < this.colsGen; j++) {
+			for (let j = 0; j < this.colsGen; j++) {
 				if (j != this.colsGen - 1)
 					(this.cuadritosAll[i * this.colsGen + j].walls[1]) ? cadena += "01" : cadena += "00";
 				else {
@@ -80,6 +74,7 @@ class MazeGenerator {
 			}
 			(send == undefined) ? writer.print(cadena) : writer += cadena + "\n";
 		}
+
 		if (send == undefined)
 			writer.close();
 		else
@@ -88,22 +83,16 @@ class MazeGenerator {
 	crear(r, c) {
 		this.realRows = r;
 		this.realCols = c;
-		if (r % 2 == 0)
-			this.rowsGen = r / 2;
-		else
-			this.rowsGen = (r + 1) / 2;
-		if (c % 2 == 0)
-			this.colsGen = c / 2;
-		else
-			this.colsGen = (c + 1) / 2;
+		this.rowsGen = ((r % 2 == 0) ? this.rowsGen = r / 2 : this.rowsGen = (r + 1) / 2);
+		this.colsGen = ((c % 2 == 0) ? this.colsGen = c / 2 : this.colsGen = (c + 1) / 2);
 		//print(this.colsGen + " " + this.rowsGen);
 		//borrar todo
 		//this.cuadritosAll = [];
 		while (this.cuadritosAll.length > 0) {
 			this.cuadritosAll.pop();
 		}
-		for (var i = 0; i < this.rowsGen; i++) {
-			for (var j = 0; j < this.colsGen; j++) {
+		for (let i = 0; i < this.rowsGen; i++) {
+			for (let j = 0; j < this.colsGen; j++) {
 				this.cuadritosAll.push(new Cuadro(i, j)); // arreglo con todos los cuadritos
 			}
 		}
@@ -111,7 +100,7 @@ class MazeGenerator {
 		this.currentCelda = this.cuadritosAll[0];
 		this.currentCelda.visited = true;
 		//2.- While there are unvisited cells
-		while (this.areUnVisited()) {
+		while (this.areUnvisited()) {
 			//2.1.- If the current cell has any neighbours which have not been visited || lo hace el metodo checkVecinos()
 			//2.1.1.- Choose randomly one of the unvisited neighbours || lo hace el metodo checkVecinos()
 			this.nextCelda = this.currentCelda.checkVecinos(this.colsGen, this.rowsGen, this.cuadritosAll);
@@ -136,13 +125,9 @@ class MazeGenerator {
 		//print("terminado");
 		this.generado = true;
 	}
-	areUnVisited() {
-		var seguir = false;
-		for (var i = 0; i < this.cuadritosAll.length && !seguir; i++) {
-			if (!this.cuadritosAll[i].visited)
-				seguir = true;
-			//print(this.cuadritosAll[i].visited);
-		}
+	areUnvisited() {
+		let seguir = false;
+		for (let i = 0; i < this.cuadritosAll.length && !seguir; i++) { if (!this.cuadritosAll[i].visited) seguir = true; }
 		return seguir;
 	}
 }
@@ -172,12 +157,12 @@ class Cuadro {
 		//        [i-1,j]
 		// [i,j-1] [i,j] [i,j+1]
 		//        [i+1,j]
-		var vecinos = [];
+		let vecinos = [];
 		// como es de una sola dimension
-		var top = cuadritosAllC[this.index(this.i - 1, this.j, c, r)];
-		var right = cuadritosAllC[this.index(this.i, this.j + 1, c, r)];
-		var bottom = cuadritosAllC[this.index(this.i + 1, this.j, c, r)];
-		var left = cuadritosAllC[this.index(this.i, this.j - 1, c, r)];
+		let top = cuadritosAllC[this.index(this.i - 1, this.j, c, r)];
+		let right = cuadritosAllC[this.index(this.i, this.j + 1, c, r)];
+		let bottom = cuadritosAllC[this.index(this.i + 1, this.j, c, r)];
+		let left = cuadritosAllC[this.index(this.i, this.j - 1, c, r)];
 		//si reciben -1, toman el valor de undefined,entonces hay que ver que sean validos:
 		//2.1.- If the current cell has any neighbours which have not been visited
 		if (top && !top.visited)
@@ -190,7 +175,7 @@ class Cuadro {
 			vecinos.push(left);
 		//2.1.1.- Choose randomly one of the unvisited neighbours
 		if (vecinos.length > 0) {
-			var r = Math.floor(random(0, vecinos.length));
+			let r = Math.floor(random(0, vecinos.length));
 			return vecinos[r];
 		}
 		else {
@@ -207,7 +192,7 @@ class Cuadro {
 		//   [current]
 		//[top, rigth, bottom, left];
 		//[0  ,   1   ,   2  ,  3  ];
-		var x = this.j - next.j;
+		let x = this.j - next.j;
 		if (x == 1) {
 			this.walls[3] = false;
 			next.walls[1] = false;
@@ -216,7 +201,7 @@ class Cuadro {
 			this.walls[1] = false;
 			next.walls[3] = false;
 		}
-		var y = this.i - next.i;
+		let y = this.i - next.i;
 		if (y == 1) {
 			this.walls[0] = false;
 			next.walls[2] = false;
