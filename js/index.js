@@ -1,3 +1,5 @@
+let escondidoConsole = false;
+
 $( document ).ready(function() {
 	tamanios();
 	//$("#panel-settings").fadeOut(1);
@@ -5,7 +7,7 @@ $( document ).ready(function() {
 	toggleSizeMaze(true);
 	$('#sizeCheck').prop('checked', true);
 	$('#posCheck').prop('checked', true);
-
+	
 });
 
 window.onresize = function(event) {
@@ -15,6 +17,8 @@ window.onresize = function(event) {
 //separador de los controles en el panel
 function tamanios()
 {
+	if(innerWidth < 570) {$("#consola").slideUp(0); escondidoConsole = true;}
+
 	$("#history").css("height", innerHeight + "px");
 	if(innerHeight <= 606)
 		$(".separador").css("margin-top", innerHeight * (1/50) + "px");
@@ -56,12 +60,11 @@ $("#ajustesBtn").click(function() {
 });
 
 $("#subir").click(function () {
-	 $("#panel-settings").slideUp("medium");
+	$("#panel-settings").slideUp("medium");
 });
 
-var escondidoConsole = false
 $("#consoleBtn").click(function() {
-	(escondidoConsole) ? $("#consola").slideDown("fast") : $("#consola").slideUp("fast")
+	((escondidoConsole) ? $("#consola").slideDown("fast") : $("#consola").slideUp("fast"));
 	escondidoConsole = !escondidoConsole;
 });
 

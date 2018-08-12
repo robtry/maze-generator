@@ -90,7 +90,7 @@ function windowResized() {
 */
 
 function calcularMaze() {
-	anchoMaze = innerWidth * (9.5/10) - anchoConsola;
+	anchoMaze = innerWidth * (9.5/10) - ((innerWidth > 570) ? anchoConsola : 0);
 	altoMaze = innerHeight * (8.8/10);
 }
 
@@ -148,6 +148,7 @@ function tryLoadMaze(file, creadoAqui) {
 			//es importado
 			 matrizLeida = file.data.split("\n");
 			 md.importado = true;
+			 historial.value(historial.value() + "Importado correctamente\n");
 		} else {
 			//generado aqui
 			matrizLeida = file.split("\n")
