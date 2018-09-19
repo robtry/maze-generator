@@ -8,6 +8,9 @@ const anchoConsola = 140; //ancho de la consola en px para que se vea el maze
 let anchoMaze = 0, altoMaze = 0; //dimesiones dinamicas del canvas
 let historial; //textbox con el historial
 let currentMaze = []
+const salida = "LLUDDDDRRRRRRUUUURRDDRRDDRRUUUURRDDDDDDDDLLLLLUULLLLLLLLLDDDDRRRRUURRDDRRRRRRRRDDLDDR\n"
+const tam = salida.length
+let wc
 const md = new MazeDraw(); //maze draw [Objeto]
 
 /*
@@ -34,13 +37,29 @@ function setup() {
 	select("#reiniciar").mouseClicked(function(){tryReloadMaze()})
 	select("#clearConsole").mouseClicked(function(){clearHistory()})
 
+	//contador
+	wc = 0
+
+	frameRate(30);
+
 	//los numeros
 	textStyle(NORMAL);
 }
 
 function draw() {
-	//ir caminando
-	
+	if(md.terminado && wc < tam){
+		if(salida[wc] == "L")
+			md.passLeft()
+		else if(salida[wc] == "R")
+			md.passRight()
+		else if(salida[wc] == "D")
+			md.passDown()
+		else if(salida[wc] == "U")
+			md.passUp()
+		wc++;
+	}else{
+		//si o no llego
+	}
 }
 
 function windowResized() {
@@ -98,6 +117,7 @@ function createMaze(matriz)//matriz es el arreglo que recibo
 		}
 	}
 	md.drawMaze()
+	md.terminado = true
 
 	// console.log("cols: " + md.colsDraw)
 	// console.log("filas: "+ md.rowsDraw)
@@ -110,8 +130,10 @@ function createMaze(matriz)//matriz es el arreglo que recibo
 
 function tryReloadMaze(){
 	//console.log(currentMaze)
+	terminado = false
 	createMaze(currentMaze)
 	clearHistory()
+	wc = 0
 }
 
 //momentaneo

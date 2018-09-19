@@ -6,6 +6,7 @@ class MazeDraw {
 		this.currentPosition;
 		this.inicialPos;
 		this.finalPos;
+		this.terminado = false
 	}
 
 	setInitialPos(x, y) {
