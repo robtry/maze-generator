@@ -6,10 +6,9 @@
 
 const anchoConsola = 140; //ancho de la consola en px para que se vea el maze
 let anchoMaze = 0, altoMaze = 0; //dimesiones dinamicas del canvas
-let currentMaze = new Array()
 let historial; //textbox con el historial
+let currentMaze = []
 const md = new MazeDraw(); //maze draw [Objeto]
-const mc = new MazeController(); // contralador que permite mover el bot
 
 /*
 |======================================|
@@ -22,16 +21,18 @@ function setup() {
 	calcularMaze(); // tamaño responsive
 
 	//posicionar el canvas desde el DOM
-	createCanvas(anchoMaze, altoMaze).parent('myContainer');
+	createCanvas(anchoMaze, altoMaze).parent('myContainer')
 	clearStage();
 
 	//dibujar
-	loadStrings("currentMaze.txt", createMaze);
+	loadStrings("currentMaze.txt", createMaze)
+
+	historial = select("#history");
 
 	//botones
-	select("#photo").mousePressed(function (){save('my.png');});
-	select("#reiniciar").mouseClicked(function(){tryReloadMaze();});
-	historial = select("#history");
+	select("#photo").mousePressed(function (){save('my.png')})
+	select("#reiniciar").mouseClicked(function(){tryReloadMaze()})
+	select("#clearConsole").mouseClicked(function(){clearHistory()})
 
 	//los numeros
 	textStyle(NORMAL);
@@ -39,7 +40,7 @@ function setup() {
 
 function draw() {
 	//ir caminando
-	md.drawMaze()
+	
 }
 
 function windowResized() {
@@ -68,6 +69,10 @@ function clearStage() {
 	rect(anchoMaze/2, altoMaze/2, anchoMaze, altoMaze);
 }
 
+function clearHistory(){
+	historial.value("")
+}
+
 /*
 |============================|
 |===funciones para botones===|
@@ -77,7 +82,10 @@ function clearStage() {
 function createMaze(matriz)//matriz es el arreglo que recibo
 {
 
-	console.log(matriz);
+	//console.log(matriz);
+	currentMaze = matriz
+
+	md.mazeToDraw = []
 
 	md.setCols(matriz[0].split(" ")[0])
 	md.setRows(matriz[0].split(" ")[1])
@@ -89,45 +97,36 @@ function createMaze(matriz)//matriz es el arreglo que recibo
 			md.mazeToDraw.push(matriz[i].split(""))
 		}
 	}
+	md.drawMaze()
 
-	console.log("cols: " + md.colsDraw)
-	console.log("filas: "+ md.rowsDraw)
-	console.log("inicial: " + md.inicialPos)
-	console.log("actual: " + md.currentPosition)
-	console.log("final: " + md.finalPos)
-	console.log(md.mazeToDraw)
+	// console.log("cols: " + md.colsDraw)
+	// console.log("filas: "+ md.rowsDraw)
+	// console.log("inicial: " + md.inicialPos)
+	// console.log("actual: " + md.currentPosition)
+	// console.log("final: " + md.finalPos)
+	// console.log(md.mazeToDraw)
 
 }
 
 function tryReloadMaze(){
-	// reinicia todo
+	//console.log(currentMaze)
+	createMaze(currentMaze)
+	clearHistory()
 }
 
 //momentaneo
 function keyPressed()
 {
-	if (keyCode === RIGHT_ARROW)
-	{
-		if(md.mazeToDraw[md.currentPosition.y][md.currentPosition.x+1] == "0" || md.currentPosition.x == md.colsDraw - 1){mc.denyPass();}
-
-		else{ md.passRight(); mc.permitPass();}
+	if (keyCode === RIGHT_ARROW){
+		md.passRight()
 	}
-	else if(keyCode === LEFT_ARROW)
-	{
-		if(md.mazeToDraw[md.currentPosition.y][md.currentPosition.x-1] || md.currentPosition.x == 0) {mc.denyPass();}
-
-		else{ md.passLeft(); mc.permitPass();}
+	else if(keyCode === LEFT_ARROW){
+		md.passLeft()
 	}
-	else if(keyCode === UP_ARROW)
-	{
-		if(md.mazeToDraw[md.currentPosition.y - 1][md.currentPosition.x] || md.currentPosition.y == 0) {mc.denyPass();}
-
-		else{ md.passUp(); mc.permitPass();}
+	else if(keyCode === UP_ARROW){
+		md.passUp()
 	}
-	else if(keyCode === DOWN_ARROW)
-	{
-		if(md.mazeToDraw[md.currentPosition.y + 1][md.colsDraw + md.currentPosition.x] || md.currentPosition.y == md.rowsDraw - 1){ mc.denyPass();}
-
-		else{ md.passDown(); mc.permitPass();}
+	else if(keyCode === DOWN_ARROW){
+		md.passDown()
 	}
 }
