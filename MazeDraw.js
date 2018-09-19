@@ -2,7 +2,7 @@ class MazeDraw {
 	constructor() {
 		this.rowsDraw = 0;
 		this.colsDraw = 0;
-		this.mazeToDraw = [];
+		this.mazeToDraw = new Array();
 		this.currentPosition;
 		this.inicialPos;
 		this.finalPos;
@@ -20,14 +20,6 @@ class MazeDraw {
 	}
 	setRows(r){
 		this.rowsDraw = r
-	}
-	setMaze() {
-		this.mazeToDraw = [];
-		for (let i = 0; i < this.rowsDraw; i++) {
-			for (let j = 0; j < this.colsDraw; j++) {
-				this.mazeToDraw.push(currentMaze[i * this.colsDraw + j]);
-			}
-		}
 	}
 	drawMaze() {
 		background(255);
@@ -61,10 +53,11 @@ class MazeDraw {
 					fill("#e67e22"); //naranja
 				else if (i == this.currentPosition.y && j == this.currentPosition.x)
 					fill("#8e44ad"); //morado
-				else if (this.mazeToDraw[i * this.colsDraw + j] == "v")
+				else if (this.mazeToDraw[i][j] == "v")
 					fill("#1abc9c"); //verde
 				else
-					(this.mazeToDraw[i * this.colsDraw + j]) ? fill("#000000") : fill("#ffffff");
+					(this.mazeToDraw[i][j] == "1") ? fill("#000000") : fill("#ffffff");
+					
 				rect(this.posX, this.posY, this.anchoCuadrito, this.altoCuadrito);
 				this.posX += this.anchoCuadrito;
 			}
@@ -73,22 +66,22 @@ class MazeDraw {
 		}
 	}
 	passUp() {
-		this.mazeToDraw[this.currentPosition.y * this.colsDraw + this.currentPosition.x] = "v";
+		this.mazeToDraw[this.currentPosition.y][this.currentPosition.x] = "v";
 		this.currentPosition.y -= 1;
 		this.drawMaze();
 	}
 	passDown() {
-		this.mazeToDraw[this.currentPosition.y * this.colsDraw + this.currentPosition.x] = "v";
+		this.mazeToDraw[this.currentPosition.y][this.currentPosition.x] = "v";
 		this.currentPosition.y += 1;
 		this.drawMaze();
 	}
 	passLeft() {
-		this.mazeToDraw[this.currentPosition.y * this.colsDraw + this.currentPosition.x] = "v";
+		this.mazeToDraw[this.currentPosition.y][this.currentPosition.x] = "v";
 		this.currentPosition.x -= 1;
 		this.drawMaze();
 	}
-	passRigth() {
-		this.mazeToDraw[this.currentPosition.y * this.colsDraw + this.currentPosition.x] = "v";
+	passRight() {
+		this.mazeToDraw[this.currentPosition.y][this.currentPosition.x] = "v";
 		this.currentPosition.x += 1;
 		this.drawMaze();
 	}

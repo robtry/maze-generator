@@ -39,6 +39,7 @@ function setup() {
 
 function draw() {
 	//ir caminando
+	md.drawMaze()
 }
 
 function windowResized() {
@@ -77,7 +78,6 @@ function createMaze(matriz)//matriz es el arreglo que recibo
 {
 
 	console.log(matriz);
-	currentMaze = new Array()
 
 	md.setCols(matriz[0].split(" ")[0])
 	md.setRows(matriz[0].split(" ")[1])
@@ -86,7 +86,7 @@ function createMaze(matriz)//matriz es el arreglo que recibo
 
 	for (let i = 3; i < matriz.length; i++) {
 		if(matriz[i].length > 0){
-			currentMaze.push(matriz[i].split(""))
+			md.mazeToDraw.push(matriz[i].split(""))
 		}
 	}
 
@@ -95,7 +95,7 @@ function createMaze(matriz)//matriz es el arreglo que recibo
 	console.log("inicial: " + md.inicialPos)
 	console.log("actual: " + md.currentPosition)
 	console.log("final: " + md.finalPos)
-	console.log(currentMaze)
+	console.log(md.mazeToDraw)
 
 }
 
@@ -108,22 +108,26 @@ function keyPressed()
 {
 	if (keyCode === RIGHT_ARROW)
 	{
-		if(currentMaze[md.currentPosition.y * md.colsDraw + (md.currentPosition.x+1)] || md.currentPosition.x == md.colsDraw - 1){mc.denyPass();}
-		else{ md.passRigth(); mc.permitPass();}
+		if(md.mazeToDraw[md.currentPosition.y][md.currentPosition.x+1] == "0" || md.currentPosition.x == md.colsDraw - 1){mc.denyPass();}
+
+		else{ md.passRight(); mc.permitPass();}
 	}
 	else if(keyCode === LEFT_ARROW)
 	{
-		if(currentMaze[md.currentPosition.y * md.colsDraw + (md.currentPosition.x-1)] || md.currentPosition.x == 0) {mc.denyPass();}
+		if(md.mazeToDraw[md.currentPosition.y][md.currentPosition.x-1] || md.currentPosition.x == 0) {mc.denyPass();}
+
 		else{ md.passLeft(); mc.permitPass();}
 	}
 	else if(keyCode === UP_ARROW)
 	{
-		if(currentMaze[(md.currentPosition.y - 1) * md.colsDraw + md.currentPosition.x] || md.currentPosition.y == 0) {mc.denyPass();}
+		if(md.mazeToDraw[md.currentPosition.y - 1][md.currentPosition.x] || md.currentPosition.y == 0) {mc.denyPass();}
+
 		else{ md.passUp(); mc.permitPass();}
 	}
 	else if(keyCode === DOWN_ARROW)
 	{
-		if(currentMaze[(md.currentPosition.y + 1) * md.colsDraw + md.currentPosition.x] || md.currentPosition.y == md.rowsDraw - 1){ mc.denyPass();}
+		if(md.mazeToDraw[md.currentPosition.y + 1][md.colsDraw + md.currentPosition.x] || md.currentPosition.y == md.rowsDraw - 1){ mc.denyPass();}
+
 		else{ md.passDown(); mc.permitPass();}
 	}
 }
